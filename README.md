@@ -19,8 +19,7 @@ Para garantizar escalabilidad, velocidad y una experiencia de usuario fluida, el
 
 * **Frontend:** [React.js](https://reactjs.org/)
 * **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth & Realtime)
-* **Despliegue:** * **Local:** TomCat (Pruebas de entorno)
-    * **Producción:** Vercel
+* **Despliegue: Vercel
 
 ---
 
@@ -43,3 +42,5 @@ Planificación estratégica basada en hitos clave:
 | **09-Ene** | Pruebas de Despliegue en Vercel |
 
 ---
+Participante: Alejandro Rey Tostado
+Centro: IES Albarregas, Mérida
