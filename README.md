@@ -19,7 +19,7 @@ Para garantizar escalabilidad, velocidad y una experiencia de usuario fluida, el
 
 * **Frontend:** [React.js](https://reactjs.org/)
 * **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth & Realtime)
-* **Despliegue: Vercel
+* **Despliegue**: Vercel
 
 ---
 
@@ -34,12 +34,16 @@ Planificación estratégica basada en hitos clave:
 | **03-Oct** | Definición de Requisitos Funcionales y No Funcionales |
 | **10-Oct** | Desarrollo de las Interfaces Gráficas |
 | **17-Oct** | Desarrollo de la Estructura de la Base de Datos |
-| **24-Oct** | Definición de Modelo Relacional de la BD |
+| **24-Oct** | Definición de **Modelo Relacional de la Base de Datos** |
 | **31-Oct** | Presentación de Interfaces y BD a la Empresa |
 | **07-Nov** | Elección de Tecnologías (React & Supabase) |
 | **12-Dic** | Evaluación de Opciones de Despliegue |
 | **19-Dic** | Pruebas de Despliegue en Entorno Local (TomCat) |
-| **09-Ene** | Pruebas de Despliegue en Vercel |
+| **09-Ene** | Pruebas de Despliegue en **Vercel** |
+| **16-Ene** | Creación **README** de presentación |
+| **23-Ene** | Preparación para el futuro sobre el **Manual de Usuario** |
+| **30-Ene** | Preparación para el futuro sobre el **Manual Técnico** |
+| **6-Feb** | Manual de Despliegue |
 
 ---
 Participante: Alejandro Rey Tostado
