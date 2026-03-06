@@ -23,6 +23,14 @@ Para garantizar escalabilidad, velocidad y una experiencia de usuario fluida, el
 
 ---
 
+| Rol | Descripción | Funcionalidades |
+| :--- | :--- | :--- |
+| **⚡Administrador** | Gestiona toda la aplicación: configura, añade o elimina funcionalidades, usuarios y datos. | <ul><li>Acceso total a toda la aplicación</li></ul> |
+| **📋Gerente** | Supervisa y valida la gestión de obras y empleados. | <ul><li>Consultar y aprobar obras</li><li>Modificar datos de empleados</li><li>Supervisar asignaciones</li><li>Acceder a reportes e informes</li></ul> |
+| **👷Empleados** | Realiza tareas asignadas y registra su actividad diaria; solo accede a sus propios datos. | <ul><li>Consultar tareas y obras asignadas</li><li>Registrar actividades diarias</li><li>Actualizar estado de tareas propias</li></ul> |
+
+---
+
 ## 📅 Cronograma de Desarrollo
 Planificación estratégica basada en hitos clave:
 
