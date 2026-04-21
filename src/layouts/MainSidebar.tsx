@@ -8,7 +8,7 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { HardHat, Wrench, Users, LayoutDashboard } from "lucide-react";
+import { HardHat, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export function MainSidebar() {
@@ -44,9 +44,6 @@ export function MainSidebar() {
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-
-                            {/* (Aquí añadiremos Empleados e Inventario más adelante) */}
-
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>

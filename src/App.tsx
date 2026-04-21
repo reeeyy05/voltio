@@ -1,26 +1,32 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
+import LandingPage from './pages/LandingPage';
+import { LayoutDashboard } from 'lucide-react';
 
-const LandingPage = () => <div className="p-20 text-center text-3xl font-bold text-slate-800">🏠 Bienvenido a Voltio (Página Pública)</div>;
-const DashboardPage = () => <h1 className="text-2xl font-bold text-slate-800">📊 Resumen del Panel</h1>;
-const WorksPage = () => <h1 className="text-2xl font-bold text-slate-800">🚧 Listado de Obras Eléctricas</h1>;
+// Pantalla temporal del panel interno
+const DashboardPage = () => (
+  <div className="p-6">
+    <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100 mb-4 flex items-center gap-3">
+      <LayoutDashboard className="h-8 w-8 text-primary" />
+      Panel Principal
+    </h1>
+    <p className="text-stone-600 dark:text-stone-300">
+      Aquí irá la información de obras y tareas de la empresa.
+    </p>
+  </div>
+);
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Si entran a la dirección principal ("/"), les enseñamos la portada libre */}
+        {/* RUTA PÚBLICA: La Landing Page (Pantalla completa, sin sidebar) */}
         <Route path="/" element={<LandingPage />} />
 
-        {/* --- EL INTERIOR DE LA EMPRESA (Privado) --- */}
+        {/* RUTAS PRIVADAS: El entorno de trabajo (Con sidebar y cabecera interna) */}
         <Route path="/app" element={<MainLayout />}>
-          <Route path="panel" element={<DashboardPage />} />
-          <Route path="obras" element={<WorksPage />} />
+          <Route index element={<DashboardPage />} />
         </Route>
-
-        {/* Si alguien escribe una ruta inventada (ej: /patata), lo mandamos de vuelta al inicio */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-
       </Routes>
     </BrowserRouter>
   );
