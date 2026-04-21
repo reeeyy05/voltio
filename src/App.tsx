@@ -1,87 +1,27 @@
-import {
-  SidebarProvider,
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-  SidebarTrigger
-} from "@/components/ui/sidebar"
-import { HardHat, Wrench, Users, LayoutDashboard } from "lucide-react"
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import MainLayout from './layouts/MainLayout';
+
+const LandingPage = () => <div className="p-20 text-center text-3xl font-bold text-slate-800">🏠 Bienvenido a Voltio (Página Pública)</div>;
+const DashboardPage = () => <h1 className="text-2xl font-bold text-slate-800">📊 Resumen del Panel</h1>;
+const WorksPage = () => <h1 className="text-2xl font-bold text-slate-800">🚧 Listado de Obras Eléctricas</h1>;
 
 export default function App() {
   return (
-    // SidebarProvider envuelve toda la app para gestionar el estado del menú
-    <SidebarProvider>
+    <BrowserRouter>
+      <Routes>
+        {/* Si entran a la dirección principal ("/"), les enseñamos la portada libre */}
+        <Route path="/" element={<LandingPage />} />
 
-      {/* 1. Definición del Menú Lateral */}
-      <Sidebar>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel className="text-lg font-bold text-blue-600 mb-4 mt-2">
-              ⚡ VOLTIO
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
+        {/* --- EL INTERIOR DE LA EMPRESA (Privado) --- */}
+        <Route path="/app" element={<MainLayout />}>
+          <Route path="panel" element={<DashboardPage />} />
+          <Route path="obras" element={<WorksPage />} />
+        </Route>
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href="#">
-                      <LayoutDashboard />
-                      <span>Panel Principal</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+        {/* Si alguien escribe una ruta inventada (ej: /patata), lo mandamos de vuelta al inicio */}
+        <Route path="*" element={<Navigate to="/" replace />} />
 
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href="#">
-                      <HardHat />
-                      <span>Obras en Curso</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href="#">
-                      <Users />
-                      <span>Empleados</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <a href="#">
-                      <Wrench />
-                      <span>Inventario Materiales</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-      </Sidebar>
-
-      {/* 2. Área de Contenido Principal (Lo que cambia según la ruta) */}
-      <main className="flex-1 p-6 w-full">
-        <div className="flex items-center gap-4 mb-6">
-          {/* Este botón oculta/muestra el menú (en móvil se vuelve hamburguesa) */}
-          <SidebarTrigger />
-          <h1 className="text-2xl font-bold">Panel Principal</h1>
-        </div>
-
-        <div className="border-2 border-dashed border-gray-300 rounded-lg h-96 flex items-center justify-center text-gray-500">
-          Aquí irá el contenido de las pantallas (Gráficos, Tablas, Formularios...)
-        </div>
-      </main>
-
-    </SidebarProvider>
-  )
+      </Routes>
+    </BrowserRouter>
+  );
 }
