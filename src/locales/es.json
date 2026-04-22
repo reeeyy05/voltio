@@ -1,0 +1,45 @@
+{
+    "header": {
+        "login": "Iniciar sesión"
+    },
+    "hero": {
+        "title_pt1": "Gestión inteligente para ",
+        "title_highlight": "obras eléctricas",
+        "subtitle": "La plataforma centralizada para el control total de tus operarios, asignaciones y progreso en campo.",
+        "scroll_more": "Descubre más"
+    },
+    "features": {
+        "title": "Todo el control en un solo lugar",
+        "subtitle": "Diseñado específicamente para optimizar el rendimiento de tus equipos de campo.",
+        "card1_title": "Control de Asignaciones",
+        "card1_desc": "Gestiona y asigna operarios a obras específicas según su disponibilidad, manteniendo tu plantilla organizada al milímetro.",
+        "card2_title": "Supervisión de Tareas",
+        "card2_desc": "Realiza un seguimiento del estado y progreso de cada intervención en tiempo real, desde el inicio hasta la finalización.",
+        "card3_title": "Panel Seguro",
+        "card3_desc": "Accede a toda la información operativa desde una interfaz centralizada, con roles de seguridad estrictos y protección de datos."
+    },
+    "footer": {
+        "description": "Plataforma integral para la gestión, supervisión y control de asignaciones en obras eléctricas. Diseñada para profesionales del sector.",
+        "platform": "Plataforma",
+        "features": "Características",
+        "security": "Seguridad",
+        "docs": "Documentación",
+        "legal": "Legal",
+        "privacy": "Privacidad",
+        "terms": "Términos de servicio",
+        "contact": "Contacto soporte",
+        "rights": "Voltio. Todos los derechos reservados.",
+        "system": "Sistema de Gestión Operativa"
+    },
+    "login": {
+        "title": "Iniciar sesión",
+        "subtitle": "Introduce tus credenciales para acceder al panel operativo.",
+        "email": "Correo electrónico",
+        "email_placeholder": "ejemplo@voltio.com",
+        "password": "Contraseña",
+        "password_placeholder": "••••••••",
+        "forgot_password": "¿Has olvidado tu contraseña?",
+        "submit": "Entrar al sistema",
+        "back": "Volver al inicio"
+    }
+}

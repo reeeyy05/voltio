@@ -1,0 +1,45 @@
+{
+    "header": {
+        "login": "Log in"
+    },
+    "hero": {
+        "title_pt1": "Smart management for ",
+        "title_highlight": "electrical projects",
+        "subtitle": "The centralized platform for total control of your operators, assignments, and field progress.",
+        "scroll_more": "Discover more"
+    },
+    "features": {
+        "title": "Total control in one place",
+        "subtitle": "Designed specifically to optimize the performance of your field teams.",
+        "card1_title": "Assignment Control",
+        "card1_desc": "Manage and assign operators to specific projects based on their availability, keeping your workforce perfectly organized.",
+        "card2_title": "Task Supervision",
+        "card2_desc": "Track the status and progress of each intervention in real-time, from start to finish.",
+        "card3_title": "Secure Dashboard",
+        "card3_desc": "Access all operational information from a centralized interface, with strict security roles and data protection."
+    },
+    "footer": {
+        "description": "Comprehensive platform for the management, supervision, and control of assignments in electrical projects. Designed for industry professionals.",
+        "platform": "Platform",
+        "features": "Features",
+        "security": "Security",
+        "docs": "Documentation",
+        "legal": "Legal",
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "contact": "Support Contact",
+        "rights": "Voltio. All rights reserved.",
+        "system": "Operational Management System"
+    },
+    "login": {
+        "title": "Log in",
+        "subtitle": "Enter your credentials to access the operational dashboard.",
+        "email": "Email address",
+        "email_placeholder": "example@voltio.com",
+        "password": "Password",
+        "password_placeholder": "••••••••",
+        "forgot_password": "Forgot your password?",
+        "submit": "Enter system",
+        "back": "Back to home"
+    }
+}

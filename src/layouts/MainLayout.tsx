@@ -1,5 +1,5 @@
 import { Outlet, Link } from 'react-router-dom';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore } from '../stores/authStore';
 import { useTheme } from '../components/theme-provider';
 import { MainSidebar } from './MainSidebar';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';

@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
-import LandingPage from './pages/LandingPage';
+import LandingPage from './components/pages/LandingPage';
 import { LayoutDashboard } from 'lucide-react';
+import SignInPage from './components/forms/SignInPage';
 
 // Pantalla temporal del panel interno
 const DashboardPage = () => (
@@ -22,6 +23,9 @@ export default function App() {
       <Routes>
         {/* RUTA PÚBLICA: La Landing Page (Pantalla completa, sin sidebar) */}
         <Route path="/" element={<LandingPage />} />
+
+        {/* RUTA DE AUTENTICACIÓN: Pantalla de Login (Pantalla completa) */}
+        <Route path="/login" element={<SignInPage />} />
 
         {/* RUTAS PRIVADAS: El entorno de trabajo (Con sidebar y cabecera interna) */}
         <Route path="/app" element={<MainLayout />}>

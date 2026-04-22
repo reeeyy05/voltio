@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuthStore, type RolUsuario } from '../../store/authStore';
+import { useAuthStore, type RolUsuario } from '../../stores/authStore';
 
 // Definimos qué cargos pueden entrar a esta pantalla
 interface ProtectedRouteProps {
