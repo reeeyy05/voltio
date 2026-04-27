@@ -1,9 +1,9 @@
 import { create } from 'zustand';
 import type { Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase'; // Importamos el "cable" que acabas de crear
+import { supabase } from '@/Supabase/Client';
 
-// DEFINICIÓN DE TIPOS
-export type RolUsuario = 'admin' | 'gerente' | 'empleado' | null;
+// Simplificado a 2 roles según los requerimientos del profesor[cite: 8]
+export type RolUsuario = 'admin' | 'empleado' | null;
 
 export interface Perfil {
     id: string;
@@ -14,33 +14,29 @@ export interface Perfil {
     avatar: string | null;
 }
 
-// Lo que va a recordar nuestro cerebro central
 interface AuthState {
     session: Session | null;
     perfil: Perfil | null;
     rol: RolUsuario;
-    isLoading: boolean;
+    isLoading: boolean; // Cambiado a false por defecto para evitar bloqueos iniciales[cite: 8]
+    error: string | null;
     checkSession: () => Promise<void>;
+    signIn: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
-// ==========================================
-// 2. CREACIÓN DEL CEREBRO (Zustand)
 export const useAuthStore = create<AuthState>((set) => ({
     session: null,
     perfil: null,
     rol: null,
-    isLoading: true,
+    isLoading: false, // ¡FIX!: Ahora empieza en false[cite: 8]
+    error: null,
 
-    // Esta función se ejecutará al abrir la web para ver si ya estábamos dentro
     checkSession: async () => {
+        set({ isLoading: true });
         try {
-            set({ isLoading: true });
-
             const { data: { session } } = await supabase.auth.getSession();
-
             if (session) {
-                // Si hay sesión, descargamos los datos de su perfil
                 const { data: perfilData } = await supabase
                     .from('perfiles')
                     .select('*')
@@ -60,7 +56,39 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    // Función para cerrar la sesión y borrar la memoria
+    signIn: async (email, password) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { data, error: authError } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (authError) throw authError;
+
+            if (data.session) {
+                const { data: perfilData, error: profileError } = await supabase
+                    .from('perfiles')
+                    .select('*')
+                    .eq('id', data.session.user.id)
+                    .single();
+
+                if (profileError) console.error("Error al cargar perfil:", profileError);
+
+                set({
+                    session: data.session,
+                    perfil: (perfilData as Perfil) || null,
+                    rol: (perfilData?.rol as RolUsuario) || null
+                });
+            }
+        } catch (error: any) {
+            set({ error: error.message });
+            throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
     logout: async () => {
         await supabase.auth.signOut();
         set({ session: null, perfil: null, rol: null });
