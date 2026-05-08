@@ -7,40 +7,78 @@ import {
     SidebarMenu,
     SidebarMenuItem,
     SidebarMenuButton,
+    SidebarHeader,
 } from "@/components/ui/sidebar";
-import { HardHat, LayoutDashboard } from "lucide-react";
-import { Link } from "react-router-dom";
+import { HardHat, LayoutDashboard, Users, UserCircle } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { useAuthStore } from "@/stores/authStore";
 
 export function MainSidebar() {
+    const { rol } = useAuthStore();
+    const location = useLocation();
+
+    const isActive = (path: string) => location.pathname === path;
+
     return (
-        // La caja principal del menú lateral
         <Sidebar>
+            {/* LOGO EN EL SIDEBAR: Ahora el logo es la cabecera del menú */}
+            <SidebarHeader className="p-4 border-b border-sidebar-border">
+                <Link to="/app/panel" className="flex items-center justify-center">
+                    <img
+                        src="/logo.png"
+                        alt="Logo Voltio"
+                        className="h-12 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform"
+                    />
+                </Link>
+            </SidebarHeader>
+
             <SidebarContent>
                 <SidebarGroup>
-                    {/* Título de la sección de navegación */}
-                    <SidebarGroupLabel className="text-sm font-semibold text-slate-500 mb-2 mt-4">
-                        MENÚ PRINCIPAL
+                    <SidebarGroupLabel className="text-xs font-bold text-stone-500 tracking-widest mb-2 mt-2 uppercase">
+                        Gestión
                     </SidebarGroupLabel>
-
                     <SidebarGroupContent>
                         <SidebarMenu>
-
-                            {/* Botón: Panel de control */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
+                                <SidebarMenuButton asChild isActive={isActive("/app/panel")}>
                                     <Link to="/app/panel">
-                                        <LayoutDashboard />
+                                        <LayoutDashboard className="h-5 w-5" />
                                         <span>Panel Principal</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            {/* Botón: Gestión de obras */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild>
+                                <SidebarMenuButton asChild isActive={isActive("/app/obras")}>
                                     <Link to="/app/obras">
-                                        <HardHat />
+                                        <HardHat className="h-5 w-5" />
                                         <span>Obras en Curso</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+
+                            {rol === 'admin' && (
+                                <SidebarMenuItem>
+                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")}>
+                                        <Link to="/app/usuarios">
+                                            <Users className="h-5 w-5" />
+                                            <span>Gestión de Usuarios</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            )}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
+
+                <SidebarGroup className="mt-auto">
+                    <SidebarGroupContent>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive("/app/perfil")}>
+                                    <Link to="/app/perfil">
+                                        <UserCircle className="h-5 w-5" />
+                                        <span>Mi Perfil</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>

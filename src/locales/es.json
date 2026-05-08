@@ -41,5 +41,45 @@
         "forgot_password": "¿Has olvidado tu contraseña?",
         "submit": "Entrar al sistema",
         "back": "Volver al inicio"
+    },
+    "common": {
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "loading": "Cargando...",
+        "error": "Ha ocurrido un error",
+        "success": "Operación exitosa"
+    },
+    "roles": {
+        "admin": "Administrador",
+        "empleado": "Empleado"
+    },
+    "supabase_errors": {
+        "Invalid login credentials": "El correo o la contraseña son incorrectos.",
+        "User already registered": "Este correo ya está registrado en el sistema.",
+        "default": "Ha ocurrido un error inesperado. Contacta con el administrador."
+    },
+    "sidebar": {
+        "dashboard": "Panel Principal",
+        "works": "Obras",
+        "tasks": "Tareas",
+        "materials": "Materiales",
+        "employees": "Empleados",
+        "profile": "Mi Perfil",
+        "logout": "Cerrar sesión"
+    },
+    "works": {
+        "title": "Gestión de Obras",
+        "status_pending": "Pendiente",
+        "status_in_progress": "En curso",
+        "status_completed": "Finalizada"
+    },
+    "tasks": {
+        "title": "Mis Tareas",
+        "assignee": "Empleado Asignado"
+    },
+    "materials": {
+        "title": "Stock de Materiales",
+        "consumption": "Registrar Consumo",
+        "available": "Stock Disponible"
     }
 }

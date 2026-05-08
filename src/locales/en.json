@@ -41,5 +41,45 @@
         "forgot_password": "Forgot your password?",
         "submit": "Enter system",
         "back": "Back to home"
+    },
+    "common": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "error": "An error occurred",
+        "success": "Operation successful"
+    },
+    "roles": {
+        "admin": "Administrator",
+        "empleado": "Employee"
+    },
+    "supabase_errors": {
+        "Invalid login credentials": "Incorrect email or password.",
+        "User already registered": "This email is already registered in the system.",
+        "default": "An unexpected error occurred. Please contact the administrator."
+    },
+    "sidebar": {
+        "dashboard": "Dashboard",
+        "works": "Works",
+        "tasks": "Tasks",
+        "materials": "Materials",
+        "employees": "Employees",
+        "profile": "My Profile",
+        "logout": "Sign out"
+    },
+    "works": {
+        "title": "Works Management",
+        "status_pending": "Pending",
+        "status_in_progress": "In progress",
+        "status_completed": "Completed"
+    },
+    "tasks": {
+        "title": "My Tasks",
+        "assignee": "Assigned Employee"
+    },
+    "materials": {
+        "title": "Materials Stock",
+        "consumption": "Log Consumption",
+        "available": "Available Stock"
     }
 }

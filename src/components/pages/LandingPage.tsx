@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ChevronDown, Users, ClipboardCheck, ShieldCheck } from 'lucide-react';
 import { Header } from '../common/Header';
 import { Footer } from '../common/Footer';
+import { useAuthStore } from '@/stores/authStore';
 
 function FadeInSection({ children }: { children: ReactNode }) {
     const [isVisible, setVisible] = useState(false);
@@ -28,8 +29,8 @@ function FadeInSection({ children }: { children: ReactNode }) {
         <div
             ref={domRef}
             className={`transition-all duration-1000 ease-out transform ${isVisible
-                    ? 'opacity-100 translate-y-0'
-                    : 'opacity-0 translate-y-24'
+                ? 'opacity-100 translate-y-0'
+                : 'opacity-0 translate-y-24'
                 }`}
         >
             {children}
@@ -40,11 +41,24 @@ function FadeInSection({ children }: { children: ReactNode }) {
 export default function LandingPage() {
     const { t } = useTranslation();
 
+    // Consultamos el estado de sesión por si un usuario logueado visita la Home
+    const { perfil, rol, logout } = useAuthStore();
+    const nombreCompleto = perfil ? `${perfil.nombre} ${perfil.apellidos || ''}`.trim() : undefined;
+
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
-            <Header />
 
-            <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden" style={{ minHeight: 'calc(100vh - 6rem)' }}>
+            {/* HEADER PARA LA LANDING: showLogo={true} y sin sidebar trigger */}
+            <Header
+                userName={nombreCompleto}
+                role={rol || undefined}
+                avatarUrl={perfil?.avatar}
+                onLogout={logout}
+                showLogo={true}
+                showSidebarTrigger={false}
+            />
+
+            <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)' }}>
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#eab308_1px,transparent_1px),linear-gradient(to_bottom,#eab308_1px,transparent_1px)] bg-[size:24px_24px] opacity-15 dark:opacity-20"></div>
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[100px] -z-10"></div>
 
