@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Loader2, CheckCircle2, Upload, User } from 'lucide-react';
 import { PasswordInput } from '../ui/PasswordInput';
+// NUEVO: Importamos tu store global
+import { useAuthStore } from '@/stores/authStore';
 
 export const SignUpForm: React.FC = () => {
     const [nombre, setNombre] = useState('');
@@ -13,7 +15,6 @@ export const SignUpForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // NUEVO: Estados para el avatar
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,11 +25,12 @@ export const SignUpForm: React.FC = () => {
 
     const navigate = useNavigate();
 
-    // NUEVO: Manejador para previsualizar la foto antes de subirla
+    // NUEVO: Extraemos la función para actualizar la sesión en toda la app
+    const { checkSession } = useAuthStore();
+
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            // Validamos que sea una imagen y no pese demasiado (ej. máx 2MB)
             if (file.size > 2 * 1024 * 1024) {
                 setError('La imagen no debe superar los 2MB');
                 return;
@@ -44,7 +46,6 @@ export const SignUpForm: React.FC = () => {
         setError(null);
         setLoading(true);
 
-        // 1. Validaciones Regex (Frontend)
         const nameRegex = /^[a-zA-ZÀ-ÿ\u00f1\u00d1\s'-]{2,50}$/;
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
@@ -67,7 +68,7 @@ export const SignUpForm: React.FC = () => {
         }
 
         try {
-            // 2. CREAR USUARIO (El Trigger de la BBDD le pondrá el avatar por defecto)
+            // 1. CREAR USUARIO
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -78,39 +79,38 @@ export const SignUpForm: React.FC = () => {
 
             if (authError) throw authError;
 
-            // 3. SUBIDA SEGURA DEL AVATAR (Solo si eligió foto y la cuenta se creó bien)
+            // 2. SUBIDA SEGURA DEL AVATAR
             if (avatarFile && authData.user) {
                 const fileExt = avatarFile.name.split('.').pop();
-                // Nombramos el archivo con el ID del usuario para tener el bucket ordenado
                 const fileName = `${authData.user.id}-${Date.now()}.${fileExt}`;
 
                 const { error: uploadError } = await supabase.storage
                     .from('avatars')
                     .upload(fileName, avatarFile, { cacheControl: '3600', upsert: false });
 
-                if (uploadError) {
-                    console.error("Error subiendo foto:", uploadError);
-                    // No cortamos la ejecución porque la cuenta ya está creada, solo avisamos
-                    setError("Cuenta creada, pero hubo un error al subir la foto de perfil.");
-                } else {
-                    // Obtenemos la URL pública de la imagen que acabamos de subir
+                if (!uploadError) {
                     const { data: urlData } = supabase.storage
                         .from('avatars')
                         .getPublicUrl(fileName);
 
-                    // Actualizamos la tabla perfiles con la foto real (pisando la de por defecto)
                     await supabase
                         .from('perfiles')
                         .update({ avatar: urlData.publicUrl })
                         .eq('id', authData.user.id);
+                } else {
+                    console.error("Error subiendo foto:", uploadError);
                 }
             }
 
-            // 4. ÉXITO
+            // NUEVO: 3. AUTO-LOGIN 
+            // Forzamos a Zustand a leer la sesión recién creada para que las rutas protegidas se abran
+            await checkSession();
+
+            // 4. ÉXITO Y REDIRECCIÓN DIRECTA
             setSuccess(true);
             setTimeout(() => {
                 navigate('/app/panel');
-            }, 2000);
+            }, 1500); // Reducido un poco el tiempo para que sea más ágil
 
         } catch (err: any) {
             setError(err.message || 'Error inesperado al crear la cuenta');
@@ -123,8 +123,8 @@ export const SignUpForm: React.FC = () => {
         return (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
                 <CheckCircle2 className="h-16 w-16 text-green-500 animate-bounce" />
-                <h3 className="text-2xl font-bold text-stone-800 dark:text-stone-100">¡Cuenta creada!</h3>
-                <p className="text-stone-600 dark:text-stone-400">Redirigiendo a tu panel...</p>
+                <h3 className="text-2xl font-bold text-stone-800 dark:text-stone-100">¡Cuenta creada con éxito!</h3>
+                <p className="text-stone-600 dark:text-stone-400">Redirigiendo a tu panel de control...</p>
             </div>
         );
     }
@@ -214,7 +214,7 @@ export const SignUpForm: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-stone-800 dark:text-stone-200 font-medium">Contraseña</Label>
+                <Label htmlFor="password" className="text-stone-800 dark:text-stone-200 font-medium">Contraseña (Mínimo 6 caracteres)</Label>
                 <PasswordInput
                     id="password"
                     required

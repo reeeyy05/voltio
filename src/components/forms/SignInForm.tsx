@@ -20,7 +20,7 @@ export function SignInForm() {
         try {
             await signIn(email, password);
             navigate('/app/panel');
-        } catch (err) {}
+        } catch (err) { }
     };
 
     return (
@@ -51,9 +51,6 @@ export function SignInForm() {
                     <Label htmlFor="password" className="text-stone-800 dark:text-stone-200">
                         Contraseña
                     </Label>
-                    <a href="/reset-password" className="text-sm font-medium text-primary hover:underline">
-                        ¿Olvidaste tu contraseña?
-                    </a>
                 </div>
                 <PasswordInput
                     id="password"
@@ -63,6 +60,9 @@ export function SignInForm() {
                     required
                     disabled={isLoading}
                 />
+                <a href="/reset-password" className="text-sm font-medium text-primary hover:underline">
+                    ¿Olvidaste tu contraseña?
+                </a>
             </div>
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                 {isLoading ? (
