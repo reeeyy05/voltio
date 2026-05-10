@@ -8,84 +8,178 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
     SidebarHeader,
+    SidebarFooter,
 } from "@/components/ui/sidebar";
-import { HardHat, LayoutDashboard, Users, UserCircle } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import {
+    HardHat,
+    LayoutDashboard,
+    Users,
+    UserCircle,
+    LogOut,
+    Settings,
+    ChevronUp
+} from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function MainSidebar() {
-    const { rol } = useAuthStore();
+    // Extraemos todo lo necesario del estado global (perfil y logout)
+    const { rol, perfil, logout } = useAuthStore();
     const location = useLocation();
+    const navigate = useNavigate();
 
     const isActive = (path: string) => location.pathname === path;
 
+    // Función para cerrar sesión y volver al login
+    const handleLogout = async () => {
+        await logout();
+        navigate('/login');
+    };
+
     return (
-        <Sidebar>
-            {/* LOGO EN EL SIDEBAR: Ahora el logo es la cabecera del menú */}
+        <Sidebar collapsible="icon">
+            {/* CABECERA: Logo de la Empresa */}
             <SidebarHeader className="p-4 border-b border-sidebar-border">
-                <Link to="/app/panel" className="flex items-center justify-center">
+                <Link to="/app/panel" className="flex items-center gap-3 px-2">
                     <img
                         src="/logo.png"
                         alt="Logo Voltio"
-                        className="h-12 w-auto object-contain drop-shadow-sm hover:scale-105 transition-transform"
+                        className="h-8 w-auto object-contain"
                     />
                 </Link>
             </SidebarHeader>
 
             <SidebarContent>
+                {/* GRUPO 1: PRINCIPAL */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="text-xs font-bold text-stone-500 tracking-widest mb-2 mt-2 uppercase">
-                        Gestión
-                    </SidebarGroupLabel>
+                    <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Principal</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/panel")}>
+                                <SidebarMenuButton asChild isActive={isActive("/app/panel")} tooltip="Panel Principal">
                                     <Link to="/app/panel">
-                                        <LayoutDashboard className="h-5 w-5" />
-                                        <span>Panel Principal</span>
+                                        <LayoutDashboard />
+                                        <span>Dashboard</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
 
+                {/* GRUPO 2: OPERACIONES (Visible para todos) */}
+                <SidebarGroup>
+                    <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Operaciones</SidebarGroupLabel>
+                    <SidebarGroupContent>
+                        <SidebarMenu>
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/obras")}>
+                                <SidebarMenuButton asChild isActive={isActive("/app/obras")} tooltip="Obras en Curso">
                                     <Link to="/app/obras">
-                                        <HardHat className="h-5 w-5" />
-                                        <span>Obras en Curso</span>
+                                        <HardHat />
+                                        <span>Obras</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
 
-                            {rol === 'admin' && (
+                {/* GRUPO 3: ADMINISTRACIÓN (Solo Admins) */}
+                {rol === 'admin' && (
+                    <SidebarGroup>
+                        <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Sistema</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")}>
+                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")} tooltip="Gestión de Usuarios">
                                         <Link to="/app/usuarios">
-                                            <Users className="h-5 w-5" />
-                                            <span>Gestión de Usuarios</span>
+                                            <Users />
+                                            <span>Usuarios</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                            )}
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
-
-                <SidebarGroup className="mt-auto">
-                    <SidebarGroupContent>
-                        <SidebarMenu>
-                            <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/perfil")}>
-                                    <Link to="/app/perfil">
-                                        <UserCircle className="h-5 w-5" />
-                                        <span>Mi Perfil</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                )}
             </SidebarContent>
+
+            {/* FOOTER: Perfil de Usuario y Menú de Logout */}
+            <SidebarFooter className="p-4 border-t border-sidebar-border">
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton
+                                    size="lg"
+                                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+                                >
+                                    <Avatar className="h-8 w-8 rounded-lg">
+                                        <AvatarImage src={perfil?.avatar || undefined} alt={perfil?.nombre} />
+                                        <AvatarFallback className="rounded-lg bg-primary/10 text-primary uppercase font-bold">
+                                            {perfil?.nombre?.charAt(0) || 'U'}
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
+                                        <span className="truncate font-semibold">{perfil?.nombre} {perfil?.apellidos}</span>
+                                        <span className="truncate text-[10px] text-stone-500 uppercase font-bold tracking-wider">{rol}</span>
+                                    </div>
+                                    <ChevronUp className="ml-auto group-data-[collapsible=icon]:hidden" />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                side="top"
+                                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                                align="start"
+                                sideOffset={4}
+                            >
+                                <DropdownMenuLabel className="p-0 font-normal">
+                                    <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
+                                        <Avatar className="h-8 w-8 rounded-lg">
+                                            <AvatarImage src={perfil?.avatar || undefined} />
+                                            <AvatarFallback className="rounded-lg bg-primary/10 text-primary uppercase font-bold">
+                                                {perfil?.nombre?.charAt(0) || 'U'}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="grid flex-1 text-left text-sm leading-tight">
+                                            <span className="truncate font-semibold">{perfil?.nombre}</span>
+                                            <span className="truncate text-xs text-stone-500">{perfil?.email}</span>
+                                        </div>
+                                    </div>
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem asChild>
+                                    <Link to="/app/perfil" className="cursor-pointer w-full">
+                                        <UserCircle className="mr-2 h-4 w-4" />
+                                        Mi Perfil
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="cursor-pointer">
+                                    <Settings className="mr-2 h-4 w-4" />
+                                    Ajustes
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem
+                                    onClick={handleLogout}
+                                    className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
+                                >
+                                    <LogOut className="mr-2 h-4 w-4" />
+                                    Cerrar Sesión
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     );
 }

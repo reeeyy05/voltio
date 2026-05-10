@@ -1,20 +1,20 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { LogOut, Moon, Sun } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useTheme } from '../theme-provider';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
+// Mantenemos tus Props originales para no romper TypeScript en otras páginas
 interface HeaderProps {
     userName?: string;
     role?: string;
     avatarUrl?: string | null;
     onLogout?: () => void;
     showSidebarTrigger?: boolean;
-    showLogo?: boolean; // Controla si se ve el logo (true en Landing, false en App)
+    showLogo?: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -53,30 +53,9 @@ export const Header: React.FC<HeaderProps> = ({
                         </Button>
                     </div>
 
-                    {userName ? (
-                        <div className="flex items-center gap-3 pl-4 border-l border-stone-300 dark:border-stone-800">
-                            <div className="hidden md:flex flex-col text-right">
-                                <span className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-tight">{userName}</span>
-                                <span className="text-xs text-stone-500 capitalize">{role || ''}</span>
-                            </div>
-                            <Avatar className="h-9 w-9 border border-stone-200 dark:border-stone-700">
-                                <AvatarImage src={avatarUrl || ''} />
-                                <AvatarFallback className="bg-primary text-primary-foreground text-xs font-bold uppercase">
-                                    {userName.charAt(0)}
-                                </AvatarFallback>
-                            </Avatar>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                onClick={onLogout}
-                                className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20"
-                                title={t('common.logout')}
-                            >
-                                <LogOut className="h-5 w-5" />
-                            </Button>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2">
+                    {/* LÓGICA CLAVE: Si NO hay usuario, mostramos Iniciar Sesión / Registrarse */}
+                    {!userName && (
+                        <div className="flex items-center gap-2 pl-4 border-l border-stone-300 dark:border-stone-800">
                             <Button variant="ghost" asChild className="hidden sm:flex text-stone-600 dark:text-stone-300">
                                 <Link to="/login">Iniciar Sesión</Link>
                             </Button>
@@ -85,6 +64,7 @@ export const Header: React.FC<HeaderProps> = ({
                             </Button>
                         </div>
                     )}
+                    {/* Si el usuario SÍ está logueado, no renderizamos nada más porque el Sidebar ya tiene su perfil */}
                 </div>
             </div>
         </header>
