@@ -41,7 +41,6 @@ export function SignInForm() {
                     placeholder="ejemplo@voltio.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required
                     disabled={isLoading}
                     className="bg-background focus-visible:ring-primary"
                 />
@@ -57,7 +56,6 @@ export function SignInForm() {
                     placeholder="Introduce tu contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required
                     disabled={isLoading}
                 />
                 <a href="/reset-password" className="text-sm font-medium text-primary hover:underline">

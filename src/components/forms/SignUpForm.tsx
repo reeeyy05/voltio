@@ -177,7 +177,6 @@ export const SignUpForm: React.FC = () => {
                     <Label htmlFor="nombre" className="text-stone-800 dark:text-stone-200 font-medium">Nombre</Label>
                     <Input
                         id="nombre"
-                        required
                         placeholder="Juan"
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
@@ -189,7 +188,6 @@ export const SignUpForm: React.FC = () => {
                     <Label htmlFor="apellidos" className="text-stone-800 dark:text-stone-200 font-medium">Apellidos</Label>
                     <Input
                         id="apellidos"
-                        required
                         placeholder="Pérez"
                         value={apellidos}
                         onChange={(e) => setApellidos(e.target.value)}
@@ -204,7 +202,6 @@ export const SignUpForm: React.FC = () => {
                 <Input
                     id="email"
                     type="email"
-                    required
                     placeholder="juan@ejemplo.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -217,7 +214,6 @@ export const SignUpForm: React.FC = () => {
                 <Label htmlFor="password" className="text-stone-800 dark:text-stone-200 font-medium">Contraseña (Mínimo 6 caracteres)</Label>
                 <PasswordInput
                     id="password"
-                    required
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

@@ -2,7 +2,6 @@ import {
     Sidebar,
     SidebarContent,
     SidebarGroup,
-    SidebarGroupLabel,
     SidebarGroupContent,
     SidebarMenu,
     SidebarMenuItem,
@@ -17,7 +16,8 @@ import {
     UserCircle,
     LogOut,
     Settings,
-    ChevronUp
+    ChevronUp,
+    Package // NUEVO ICONO PARA INVENTARIO
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
@@ -32,14 +32,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function MainSidebar() {
-    // Extraemos todo lo necesario del estado global (perfil y logout)
     const { rol, perfil, logout } = useAuthStore();
     const location = useLocation();
     const navigate = useNavigate();
 
     const isActive = (path: string) => location.pathname === path;
 
-    // Función para cerrar sesión y volver al login
     const handleLogout = async () => {
         await logout();
         navigate('/login');
@@ -47,21 +45,14 @@ export function MainSidebar() {
 
     return (
         <Sidebar collapsible="icon">
-            {/* CABECERA: Logo de la Empresa */}
             <SidebarHeader className="p-4 border-b border-sidebar-border">
                 <Link to="/app/panel" className="flex items-center gap-3 px-2">
-                    <img
-                        src="/logo.png"
-                        alt="Logo Voltio"
-                        className="h-8 w-auto object-contain"
-                    />
+                    <img src="/logo.png" alt="Logo Voltio" className="h-8 w-auto object-contain" />
                 </Link>
             </SidebarHeader>
 
             <SidebarContent>
-                {/* GRUPO 1: PRINCIPAL */}
                 <SidebarGroup>
-                    <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Principal</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             <SidebarMenuItem>
@@ -72,15 +63,7 @@ export function MainSidebar() {
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
 
-                {/* GRUPO 2: OPERACIONES (Visible para todos) */}
-                <SidebarGroup>
-                    <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Operaciones</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                        <SidebarMenu>
                             <SidebarMenuItem>
                                 <SidebarMenuButton asChild isActive={isActive("/app/obras")} tooltip="Obras en Curso">
                                     <Link to="/app/obras">
@@ -89,16 +72,18 @@ export function MainSidebar() {
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
-                        </SidebarMenu>
-                    </SidebarGroupContent>
-                </SidebarGroup>
 
-                {/* GRUPO 3: ADMINISTRACIÓN (Solo Admins) */}
-                {rol === 'admin' && (
-                    <SidebarGroup>
-                        <SidebarGroupLabel className="group-data-[collapsible=icon]:hidden">Sistema</SidebarGroupLabel>
-                        <SidebarGroupContent>
-                            <SidebarMenu>
+                            {/* NUEVA OPCIÓN DE INVENTARIO */}
+                            <SidebarMenuItem>
+                                <SidebarMenuButton asChild isActive={isActive("/app/inventario")} tooltip="Inventario y Materiales">
+                                    <Link to="/app/inventario">
+                                        <Package />
+                                        <span>Inventario</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+
+                            {rol === 'admin' && (
                                 <SidebarMenuItem>
                                     <SidebarMenuButton asChild isActive={isActive("/app/usuarios")} tooltip="Gestión de Usuarios">
                                         <Link to="/app/usuarios">
@@ -107,22 +92,18 @@ export function MainSidebar() {
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
-                            </SidebarMenu>
-                        </SidebarGroupContent>
-                    </SidebarGroup>
-                )}
+                            )}
+                        </SidebarMenu>
+                    </SidebarGroupContent>
+                </SidebarGroup>
             </SidebarContent>
 
-            {/* FOOTER: Perfil de Usuario y Menú de Logout */}
             <SidebarFooter className="p-4 border-t border-sidebar-border">
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton
-                                    size="lg"
-                                    className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                                >
+                                <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
                                     <Avatar className="h-8 w-8 rounded-lg">
                                         <AvatarImage src={perfil?.avatar || undefined} alt={perfil?.nombre} />
                                         <AvatarFallback className="rounded-lg bg-primary/10 text-primary uppercase font-bold">
@@ -136,12 +117,7 @@ export function MainSidebar() {
                                     <ChevronUp className="ml-auto group-data-[collapsible=icon]:hidden" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                side="top"
-                                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                                align="start"
-                                sideOffset={4}
-                            >
+                            <DropdownMenuContent side="top" className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg" align="start" sideOffset={4}>
                                 <DropdownMenuLabel className="p-0 font-normal">
                                     <div className="flex items-center gap-2 px-2 py-2 text-left text-sm">
                                         <Avatar className="h-8 w-8 rounded-lg">
@@ -168,10 +144,7 @@ export function MainSidebar() {
                                     Ajustes
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={handleLogout}
-                                    className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50"
-                                >
+                                <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50">
                                     <LogOut className="mr-2 h-4 w-4" />
                                     Cerrar Sesión
                                 </DropdownMenuItem>

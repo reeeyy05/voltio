@@ -108,15 +108,15 @@ export default function UsersManagementPage() {
                         <form onSubmit={handleCreateUser} className="space-y-4 mt-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Nombre</Label>
-                                <Input id="name" required value={newName} onChange={e => setNewName(e.target.value)} />
+                                <Input id="name" value={newName} onChange={e => setNewName(e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Correo Electrónico</Label>
-                                <Input id="email" type="email" required value={newEmail} onChange={e => setNewEmail(e.target.value)} />
+                                <Input id="email" type="email" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="password">Contraseña (Mínimo 6 caracteres)</Label>
-                                <Input id="password" type="password" required value={newPassword} onChange={e => setNewPassword(e.target.value)} />
+                                <Input id="password" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full" disabled={isCreating}>
                                 {isCreating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : 'Crear Cuenta'}

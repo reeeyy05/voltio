@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useTheme } from '../theme-provider';
 
-// Mantenemos tus Props originales para no romper TypeScript en otras páginas
 interface HeaderProps {
     userName?: string;
     role?: string;
@@ -15,10 +14,11 @@ interface HeaderProps {
     onLogout?: () => void;
     showSidebarTrigger?: boolean;
     showLogo?: boolean;
+    isLoading?: boolean; // Nueva prop
 }
 
 export const Header: React.FC<HeaderProps> = ({
-    userName, role, avatarUrl, onLogout, showSidebarTrigger, showLogo = true
+    userName, role, avatarUrl, onLogout, showSidebarTrigger, showLogo = true, isLoading
 }) => {
     const { t } = useTranslation();
     const { theme, setTheme } = useTheme();
@@ -28,10 +28,8 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
                 <div className="flex items-center gap-4">
-                    {/* Botón de hamburguesa */}
                     {showSidebarTrigger && <SidebarTrigger className="h-9 w-9" />}
 
-                    {/* El logo solo se muestra si showLogo es true */}
                     {showLogo && (
                         <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
                             <img src="/logo.png" alt="Logo Voltio" className="h-10 w-auto object-contain drop-shadow-sm" />
@@ -53,8 +51,29 @@ export const Header: React.FC<HeaderProps> = ({
                         </Button>
                     </div>
 
-                    {/* LÓGICA CLAVE: Si NO hay usuario, mostramos Iniciar Sesión / Registrarse */}
-                    {!userName && (
+                    {/* LÓGICA INTELIGENTE DE BOTONES */}
+                    {isLoading ? (
+                        <div className="flex items-center gap-2 pl-4 border-l border-stone-300 dark:border-stone-800">
+                            <div className="h-9 w-24 animate-pulse bg-stone-200 dark:bg-stone-800 rounded-md"></div>
+                        </div>
+                    ) : userName ? (
+                        // USUARIO LOGUEADO: Si está en la Landing (!showSidebarTrigger), mostramos atajos
+                        !showSidebarTrigger && (
+                            <div className="flex items-center gap-2 pl-4 border-l border-stone-300 dark:border-stone-800">
+                                <Button
+                                    variant="ghost"
+                                    onClick={onLogout}
+                                    className="hidden sm:flex text-red-600 dark:text-red-400 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                >
+                                    Cerrar Sesión
+                                </Button>
+                                <Button asChild className="bg-primary hover:bg-primary/90 text-primary-foreground font-semibold shadow-sm">
+                                    <Link to="/app/panel">Ir al Panel</Link>
+                                </Button>
+                            </div>
+                        )
+                    ) : (
+                        // USUARIO NO LOGUEADO: Mostramos botones clásicos
                         <div className="flex items-center gap-2 pl-4 border-l border-stone-300 dark:border-stone-800">
                             <Button variant="ghost" asChild className="hidden sm:flex text-stone-600 dark:text-stone-300">
                                 <Link to="/login">Iniciar Sesión</Link>
@@ -64,7 +83,7 @@ export const Header: React.FC<HeaderProps> = ({
                             </Button>
                         </div>
                     )}
-                    {/* Si el usuario SÍ está logueado, no renderizamos nada más porque el Sidebar ya tiene su perfil */}
+
                 </div>
             </div>
         </header>

@@ -41,14 +41,14 @@ function FadeInSection({ children }: { children: ReactNode }) {
 export default function LandingPage() {
     const { t } = useTranslation();
 
-    // Consultamos el estado de sesión por si un usuario logueado visita la Home
-    const { perfil, rol, logout } = useAuthStore();
+    // Extraemos también isLoading
+    const { perfil, rol, logout, isLoading } = useAuthStore();
     const nombreCompleto = perfil ? `${perfil.nombre} ${perfil.apellidos || ''}`.trim() : undefined;
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
 
-            {/* HEADER PARA LA LANDING: showLogo={true} y sin sidebar trigger */}
+            {/* HEADER INTELIGENTE */}
             <Header
                 userName={nombreCompleto}
                 role={rol || undefined}
@@ -56,6 +56,7 @@ export default function LandingPage() {
                 onLogout={logout}
                 showLogo={true}
                 showSidebarTrigger={false}
+                isLoading={isLoading}
             />
 
             <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)' }}>
