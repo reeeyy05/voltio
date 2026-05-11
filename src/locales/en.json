@@ -53,33 +53,102 @@
         "admin": "Administrator",
         "empleado": "Employee"
     },
-    "supabase_errors": {
-        "Invalid login credentials": "Incorrect email or password.",
-        "User already registered": "This email is already registered in the system.",
-        "default": "An unexpected error occurred. Please contact the administrator."
-    },
     "sidebar": {
         "dashboard": "Dashboard",
         "works": "Works",
-        "tasks": "Tasks",
-        "materials": "Materials",
-        "employees": "Employees",
+        "inventory": "Inventory",
+        "users": "Users",
         "profile": "My Profile",
-        "logout": "Sign out"
+        "settings": "Settings",
+        "logout": "Sign Out"
     },
-    "works": {
-        "title": "Works Management",
+    "dashboard": {
+        "admin_title": "Control Panel",
+        "admin_subtitle": "Welcome to the Voltio command center, {{name}}.",
+        "registered_users": "Registered Users",
+        "users_trend": "+2 since last week",
+        "active_works": "Active Works",
+        "works_trend": "8 assigned to employees",
+        "system_load": "System Load",
+        "load_trend": "All services stable",
+        "activity_title": "Platform Activity",
+        "activity_desc": "Visual summary of weekly operations.",
+        "emp_title": "Great job, {{name}}!",
+        "emp_subtitle": "Here is a summary of your current activity.",
+        "completed_tasks": "Completed Tasks",
+        "pending_tasks": "Pending",
+        "assigned_works": "Assigned Works"
+    },
+    "obras": {
+        "title": "Works & Projects",
+        "subtitle": "Collaborative project management for the company.",
+        "new_work": "New Work",
+        "create_title": "Register a new project",
+        "create_desc": "Add the main details of the new work.",
+        "form_name": "Project Name",
+        "form_name_ph": "Ex: North Building Installation",
+        "form_desc": "Description / Location",
+        "form_desc_ph": "Details, address or contact...",
+        "submit_create": "Create Project",
+        "no_works": "No works registered",
+        "no_works_desc": "Any team member can register a new work.",
+        "management": "Management",
+        "finish": "Finish",
+        "reopen": "Reopen",
+        "delete": "Delete",
+        "view_details": "View Details & Tasks",
+        "error_create": "Error creating the work",
         "status_pending": "Pending",
         "status_in_progress": "In progress",
-        "status_completed": "Completed"
+        "status_completed": "Completed",
+        "no_desc": "No additional description."
     },
-    "tasks": {
-        "title": "My Tasks",
-        "assignee": "Assigned Employee"
+    "obra_detail": {
+        "active_project": "Active project",
+        "add_task": "Add Task",
+        "assign_task": "Assign new task",
+        "task_title": "Title",
+        "task_title_ph": "Ex: Phase 1 review",
+        "task_details": "Details",
+        "task_assignee": "Assign to:",
+        "task_assignee_ph": "Select an employee...",
+        "create_task": "Create Task",
+        "tasks_list_title": "Project tasks",
+        "no_tasks": "No tasks created for this project.",
+        "your_task": "Your task",
+        "unknown_user": "Unknown",
+        "not_found": "Project not found",
+        "only_assignee": "Only the assigned user can complete this task",
+        "mark_task": "Mark task"
     },
-    "materials": {
-        "title": "Materials Stock",
-        "consumption": "Log Consumption",
-        "available": "Available Stock"
+    "users": {
+        "title": "User Management",
+        "subtitle": "Manage access and roles for your team.",
+        "add_user": "Add User",
+        "create_title": "Create new employee",
+        "create_desc": "Generate credentials for an employee to access Voltio.",
+        "form_name": "Name",
+        "form_email": "Email Address",
+        "form_password": "Password (Minimum 6 characters)",
+        "submit_create": "Create Account",
+        "col_user": "User",
+        "col_email": "Email",
+        "col_role": "Role",
+        "col_actions": "Actions",
+        "loading": "Loading users...",
+        "role_admin": "Admin",
+        "role_employee": "Employee",
+        "action_make_admin": "Make Administrator",
+        "action_remove_admin": "Remove Administrator",
+        "action_delete": "Delete User",
+        "delete_confirm_title": "Are you completely sure?",
+        "delete_confirm_desc": "This action will delete the user's profile and prevent them from accessing their assigned works and tasks. This action cannot be undone.",
+        "delete_cancel": "Cancel",
+        "delete_confirm": "Yes, delete user",
+        "error_validation": "Please fill all fields correctly."
+    },
+    "inventario": {
+        "title": "Inventory & Materials",
+        "subtitle": "Coming soon: Stock control and resource consumption."
     }
 }

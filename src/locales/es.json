@@ -53,33 +53,102 @@
         "admin": "Administrador",
         "empleado": "Empleado"
     },
-    "supabase_errors": {
-        "Invalid login credentials": "El correo o la contraseña son incorrectos.",
-        "User already registered": "Este correo ya está registrado en el sistema.",
-        "default": "Ha ocurrido un error inesperado. Contacta con el administrador."
-    },
     "sidebar": {
         "dashboard": "Panel Principal",
         "works": "Obras",
-        "tasks": "Tareas",
-        "materials": "Materiales",
-        "employees": "Empleados",
+        "inventory": "Inventario",
+        "users": "Usuarios",
         "profile": "Mi Perfil",
+        "settings": "Ajustes",
         "logout": "Cerrar sesión"
     },
-    "works": {
-        "title": "Gestión de Obras",
+    "dashboard": {
+        "admin_title": "Panel de Control",
+        "admin_subtitle": "Bienvenido al centro de mando de Voltio, {{name}}.",
+        "registered_users": "Usuarios Registrados",
+        "users_trend": "+2 desde la última semana",
+        "active_works": "Obras en Curso",
+        "works_trend": "8 asignadas a empleados",
+        "system_load": "Carga de Sistema",
+        "load_trend": "Todos los servicios estables",
+        "activity_title": "Actividad de la Plataforma",
+        "activity_desc": "Resumen visual de las operaciones semanales.",
+        "emp_title": "¡Buen trabajo, {{name}}!",
+        "emp_subtitle": "Aquí tienes un resumen de tu actividad actual.",
+        "completed_tasks": "Tareas Completadas",
+        "pending_tasks": "Pendientes",
+        "assigned_works": "Obras Asignadas"
+    },
+    "obras": {
+        "title": "Obras y Proyectos",
+        "subtitle": "Gestión colaborativa de proyectos de la empresa.",
+        "new_work": "Nueva Obra",
+        "create_title": "Dar de alta un nuevo proyecto",
+        "create_desc": "Añade los detalles principales de la nueva obra.",
+        "form_name": "Nombre de la Obra",
+        "form_name_ph": "Ej: Instalación Edificio Norte",
+        "form_desc": "Descripción / Ubicación",
+        "form_desc_ph": "Detalles, dirección o contacto...",
+        "submit_create": "Crear Obra",
+        "no_works": "No hay obras registradas",
+        "no_works_desc": "Cualquier miembro del equipo puede registrar una obra nueva.",
+        "management": "Gestión",
+        "finish": "Finalizar",
+        "reopen": "Reabrir",
+        "delete": "Eliminar",
+        "view_details": "Ver Detalles y Tareas",
+        "error_create": "Error al crear la obra",
         "status_pending": "Pendiente",
         "status_in_progress": "En curso",
-        "status_completed": "Finalizada"
+        "status_completed": "Finalizada",
+        "no_desc": "Sin descripción adicional."
     },
-    "tasks": {
-        "title": "Mis Tareas",
-        "assignee": "Empleado Asignado"
+    "obra_detail": {
+        "active_project": "Proyecto activo",
+        "add_task": "Añadir Tarea",
+        "assign_task": "Asignar nueva tarea",
+        "task_title": "Título",
+        "task_title_ph": "Ej: Revisión de fase 1",
+        "task_details": "Detalles",
+        "task_assignee": "Asignar a:",
+        "task_assignee_ph": "Selecciona un empleado...",
+        "create_task": "Crear Tarea",
+        "tasks_list_title": "Tareas de la obra",
+        "no_tasks": "No hay tareas creadas para esta obra.",
+        "your_task": "Tu tarea",
+        "unknown_user": "Desconocido",
+        "not_found": "Obra no encontrada",
+        "only_assignee": "Solo el asignado puede completar esta tarea",
+        "mark_task": "Marcar tarea"
     },
-    "materials": {
-        "title": "Stock de Materiales",
-        "consumption": "Registrar Consumo",
-        "available": "Stock Disponible"
+    "users": {
+        "title": "Gestión de Usuarios",
+        "subtitle": "Administra los accesos y roles de tu equipo.",
+        "add_user": "Añadir Usuario",
+        "create_title": "Crear nuevo empleado",
+        "create_desc": "Genera unas credenciales para que un empleado acceda a Voltio.",
+        "form_name": "Nombre",
+        "form_email": "Correo Electrónico",
+        "form_password": "Contraseña (Mínimo 6 caracteres)",
+        "submit_create": "Crear Cuenta",
+        "col_user": "Usuario",
+        "col_email": "Correo",
+        "col_role": "Rol",
+        "col_actions": "Acciones",
+        "loading": "Cargando usuarios...",
+        "role_admin": "Admin",
+        "role_employee": "Empleado",
+        "action_make_admin": "Hacer Administrador",
+        "action_remove_admin": "Quitar Administrador",
+        "action_delete": "Eliminar Usuario",
+        "delete_confirm_title": "¿Estás completamente seguro?",
+        "delete_confirm_desc": "Esta acción eliminará el perfil del usuario y le impedirá acceder a sus obras y tareas asignadas. Esta acción no se puede deshacer.",
+        "delete_cancel": "Cancelar",
+        "delete_confirm": "Sí, eliminar usuario",
+        "error_validation": "Por favor, completa todos los campos correctamente."
+    },
+    "inventario": {
+        "title": "Inventario y Materiales",
+        "subtitle": "Próximamente: Control de stock y consumo de recursos."
     }
 }

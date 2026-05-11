@@ -17,10 +17,11 @@ import {
     LogOut,
     Settings,
     ChevronUp,
-    Package // NUEVO ICONO PARA INVENTARIO
+    Package
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
+import { useTranslation } from "react-i18next"; // Importamos el hook de traducción
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     DropdownMenu,
@@ -33,6 +34,7 @@ import {
 
 export function MainSidebar() {
     const { rol, perfil, logout } = useAuthStore();
+    const { t } = useTranslation(); // Inicializamos la traducción
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -48,6 +50,9 @@ export function MainSidebar() {
             <SidebarHeader className="p-4 border-b border-sidebar-border">
                 <Link to="/app/panel" className="flex items-center gap-3 px-2">
                     <img src="/logo.png" alt="Logo Voltio" className="h-8 w-auto object-contain" />
+                    <span className="font-bold text-xl tracking-tight text-stone-800 dark:text-stone-100 group-data-[collapsible=icon]:hidden">
+                        VOLTIO
+                    </span>
                 </Link>
             </SidebarHeader>
 
@@ -55,40 +60,43 @@ export function MainSidebar() {
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
+                            {/* Dashboard */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/panel")} tooltip="Panel Principal">
+                                <SidebarMenuButton asChild isActive={isActive("/app/panel")} tooltip={t('sidebar.dashboard')}>
                                     <Link to="/app/panel">
                                         <LayoutDashboard />
-                                        <span>Dashboard</span>
+                                        <span>{t('sidebar.dashboard')}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
+                            {/* Obras */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/obras")} tooltip="Obras en Curso">
+                                <SidebarMenuButton asChild isActive={isActive("/app/obras")} tooltip={t('sidebar.works')}>
                                     <Link to="/app/obras">
                                         <HardHat />
-                                        <span>Obras</span>
+                                        <span>{t('sidebar.works')}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
-                            {/* NUEVA OPCIÓN DE INVENTARIO */}
+                            {/* Inventario */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/inventario")} tooltip="Inventario y Materiales">
+                                <SidebarMenuButton asChild isActive={isActive("/app/inventario")} tooltip={t('sidebar.inventory')}>
                                     <Link to="/app/inventario">
                                         <Package />
-                                        <span>Inventario</span>
+                                        <span>{t('sidebar.inventory')}</span>
                                     </Link>
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
 
+                            {/* Usuarios (Solo Admin) */}
                             {rol === 'admin' && (
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")} tooltip="Gestión de Usuarios">
+                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")} tooltip={t('sidebar.users')}>
                                         <Link to="/app/usuarios">
                                             <Users />
-                                            <span>Usuarios</span>
+                                            <span>{t('sidebar.users')}</span>
                                         </Link>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
@@ -112,7 +120,10 @@ export function MainSidebar() {
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                                         <span className="truncate font-semibold">{perfil?.nombre} {perfil?.apellidos}</span>
-                                        <span className="truncate text-[10px] text-stone-500 uppercase font-bold tracking-wider">{rol}</span>
+                                        {/* Traducción dinámica del rol */}
+                                        <span className="truncate text-[10px] text-stone-500 uppercase font-bold tracking-wider">
+                                            {rol ? t(`roles.${rol}`) : ''}
+                                        </span>
                                     </div>
                                     <ChevronUp className="ml-auto group-data-[collapsible=icon]:hidden" />
                                 </SidebarMenuButton>
@@ -136,17 +147,17 @@ export function MainSidebar() {
                                 <DropdownMenuItem asChild>
                                     <Link to="/app/perfil" className="cursor-pointer w-full">
                                         <UserCircle className="mr-2 h-4 w-4" />
-                                        Mi Perfil
+                                        {t('sidebar.profile')}
                                     </Link>
                                 </DropdownMenuItem>
                                 <DropdownMenuItem className="cursor-pointer">
                                     <Settings className="mr-2 h-4 w-4" />
-                                    Ajustes
+                                    {t('sidebar.settings')}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50">
                                     <LogOut className="mr-2 h-4 w-4" />
-                                    Cerrar Sesión
+                                    {t('sidebar.logout')}
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

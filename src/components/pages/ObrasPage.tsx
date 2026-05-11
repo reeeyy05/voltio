@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,7 @@ import { useObrasStore } from '@/stores/obraStore';
 export default function ObrasPage() {
     const { obras, isLoading, fetchObras, createObra, updateEstadoObra, deleteObra } = useObrasStore();
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [nuevaObra, setNuevaObra] = useState('');
@@ -26,6 +28,7 @@ export default function ObrasPage() {
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Validación manual ya que quitamos los 'required'
         if (!nuevaObra.trim()) return;
 
         setIsCreating(true);
@@ -35,7 +38,7 @@ export default function ObrasPage() {
             setNuevaObra('');
             setDescripcion('');
         } catch (error) {
-            alert("Error al crear la obra");
+            alert(t('obras.error_create'));
         } finally {
             setIsCreating(false);
         }
@@ -47,37 +50,37 @@ export default function ObrasPage() {
                 <div>
                     <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100 flex items-center gap-3">
                         <HardHat className="h-8 w-8 text-primary" />
-                        Obras y Proyectos
+                        {t('obras.title')}
                     </h1>
                     <p className="text-stone-600 dark:text-stone-400 mt-1">
-                        Gestión colaborativa de proyectos de la empresa.
+                        {t('obras.subtitle')}
                     </p>
                 </div>
 
-                {/* BOTÓN DISPONIBLE PARA TODOS */}
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">
                             <Plus className="h-4 w-4" />
-                            Nueva Obra
+                            {t('obras.new_work')}
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Dar de alta un nuevo proyecto</DialogTitle>
-                            <DialogDescription>Añade los detalles principales de la nueva obra.</DialogDescription>
+                            <DialogTitle>{t('obras.create_title')}</DialogTitle>
+                            <DialogDescription>{t('obras.create_desc')}</DialogDescription>
                         </DialogHeader>
                         <form onSubmit={handleCreate} className="space-y-4 mt-4">
                             <div className="space-y-2">
-                                <Label htmlFor="nombreObra">Nombre de la Obra</Label>
-                                <Input id="nombreObra" placeholder="Ej: Instalación Edificio Norte" value={nuevaObra} onChange={e => setNuevaObra(e.target.value)} />
+                                <Label htmlFor="nombreObra">{t('obras.form_name')}</Label>
+                                {/* SIN ATRIBUTO REQUIRED */}
+                                <Input id="nombreObra" placeholder={t('obras.form_name_ph')} value={nuevaObra} onChange={e => setNuevaObra(e.target.value)} />
                             </div>
                             <div className="space-y-2">
-                                <Label htmlFor="desc">Descripción / Ubicación</Label>
-                                <Textarea id="desc" placeholder="Detalles, dirección o contacto..." value={descripcion} onChange={e => setDescripcion(e.target.value)} />
+                                <Label htmlFor="desc">{t('obras.form_desc')}</Label>
+                                <Textarea id="desc" placeholder={t('obras.form_desc_ph')} value={descripcion} onChange={e => setDescripcion(e.target.value)} />
                             </div>
                             <Button type="submit" className="w-full" disabled={isCreating}>
-                                {isCreating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : 'Crear Obra'}
+                                {isCreating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('obras.submit_create')}
                             </Button>
                         </form>
                     </DialogContent>
@@ -89,8 +92,8 @@ export default function ObrasPage() {
             ) : obras.length === 0 ? (
                 <div className="text-center py-20 bg-card rounded-xl border border-dashed border-stone-300 dark:border-stone-800">
                     <HardHat className="h-12 w-12 mx-auto text-stone-300 dark:text-stone-700 mb-4" />
-                    <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">No hay obras registradas</h3>
-                    <p className="text-stone-500 mt-1">Cualquier miembro del equipo puede registrar una obra nueva.</p>
+                    <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">{t('obras.no_works')}</h3>
+                    <p className="text-stone-500 mt-1">{t('obras.no_works_desc')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,7 +108,6 @@ export default function ObrasPage() {
                                     </div>
                                 </div>
 
-                                {/* MENÚ DISPONIBLE PARA TODOS */}
                                 <DropdownMenu>
                                     <DropdownMenuTrigger asChild>
                                         <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -113,15 +115,15 @@ export default function ObrasPage() {
                                         </Button>
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent align="end">
-                                        <DropdownMenuLabel>Gestión</DropdownMenuLabel>
+                                        <DropdownMenuLabel>{t('obras.management')}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => updateEstadoObra(obra.id, obra.estado === 'En curso' ? 'Finalizada' : 'En curso')}>
                                             {obra.estado === 'En curso' ? <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> : <Clock className="mr-2 h-4 w-4 text-amber-500" />}
-                                            {obra.estado === 'En curso' ? 'Finalizar' : 'Reabrir'}
+                                            {obra.estado === 'En curso' ? t('obras.finish') : t('obras.reopen')}
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => deleteObra(obra.id)} className="text-red-600">
-                                            <Trash2 className="mr-2 h-4 w-4" /> Eliminar
+                                            <Trash2 className="mr-2 h-4 w-4" /> {t('obras.delete')}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
@@ -131,12 +133,12 @@ export default function ObrasPage() {
                                     <p className="text-xs text-stone-500 mb-4 line-clamp-2 italic">{obra.descripcion}</p>
                                 )}
                                 <Badge variant={obra.estado === 'En curso' ? 'secondary' : 'default'} className={obra.estado === 'En curso' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}>
-                                    {obra.estado}
+                                    {obra.estado === 'En curso' ? t('obras.status_in_progress') : t('obras.status_completed')}
                                 </Badge>
                             </CardContent>
                             <CardFooter className="pt-4 border-t border-stone-100 dark:border-stone-800">
                                 <Button variant="outline" className="w-full text-xs" onClick={() => navigate(`/app/obras/${obra.id}`)}>
-                                    Ver Detalles y Tareas
+                                    {t('obras.view_details')}
                                 </Button>
                             </CardFooter>
                         </Card>
