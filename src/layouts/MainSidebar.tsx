@@ -49,10 +49,7 @@ export function MainSidebar() {
         <Sidebar collapsible="icon">
             <SidebarHeader className="p-4 border-b border-sidebar-border">
                 <Link to="/app/panel" className="flex items-center gap-3 px-2">
-                    <img src="/logo.png" alt="Logo Voltio" className="h-8 w-auto object-contain" />
-                    <span className="font-bold text-xl tracking-tight text-stone-800 dark:text-stone-100 group-data-[collapsible=icon]:hidden">
-                        VOLTIO
-                    </span>
+                    <img src="/logo.png" alt="Logo Voltio" className="h-18 w-auto object-contain" />
                 </Link>
             </SidebarHeader>
 

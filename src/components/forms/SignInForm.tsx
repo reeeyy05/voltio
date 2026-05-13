@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
+import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -11,8 +12,8 @@ export function SignInForm() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
-    // Extraemos estado y acciones del Store global
     const { signIn, isLoading, error } = useAuthStore();
 
     const handleSignIn = async (e: React.FormEvent) => {
@@ -33,12 +34,12 @@ export function SignInForm() {
             )}
             <div className="space-y-2">
                 <Label htmlFor="email" className="text-stone-800 dark:text-stone-200">
-                    Correo electrónico
+                    {t('login.email')}
                 </Label>
                 <Input
                     id="email"
                     type="email"
-                    placeholder="ejemplo@voltio.com"
+                    placeholder={t('login.email_placeholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={isLoading}
@@ -48,28 +49,28 @@ export function SignInForm() {
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
                     <Label htmlFor="password" className="text-stone-800 dark:text-stone-200">
-                        Contraseña
+                        {t('login.password')}
                     </Label>
                 </div>
                 <PasswordInput
                     id="password"
-                    placeholder="Introduce tu contraseña"
+                    placeholder={t('login.password_placeholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
                 />
                 <a href="/reset-password" className="text-sm font-medium text-primary hover:underline">
-                    ¿Olvidaste tu contraseña?
+                    {t('login.forgot_password')}
                 </a>
             </div>
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                 {isLoading ? (
                     <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Iniciando sesión...
+                        {t('auth.signin_loading')}
                     </>
                 ) : (
-                    'Entrar'
+                    t('login.submit')
                 )}
             </Button>
         </form>

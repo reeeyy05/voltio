@@ -1,12 +1,12 @@
 import { supabase } from '@/Supabase/Client';
 import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AlertCircle, Loader2, CheckCircle2, Upload, User } from 'lucide-react';
 import { PasswordInput } from '../ui/PasswordInput';
-// NUEVO: Importamos tu store global
 import { useAuthStore } from '@/stores/authStore';
 
 export const SignUpForm: React.FC = () => {
@@ -24,15 +24,14 @@ export const SignUpForm: React.FC = () => {
     const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
-
-    // NUEVO: Extraemos la función para actualizar la sesión en toda la app
+    const { t } = useTranslation();
     const { checkSession } = useAuthStore();
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > 2 * 1024 * 1024) {
-                setError('La imagen no debe superar los 2MB');
+                setError(t('auth.err_img_size'));
                 return;
             }
             setAvatarFile(file);
@@ -50,25 +49,24 @@ export const SignUpForm: React.FC = () => {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
         if (!nameRegex.test(nombre)) {
-            setError("El nombre ingresado no es válido.");
+            setError(t('auth.err_name'));
             setLoading(false);
             return;
         }
 
         if (!emailRegex.test(email)) {
-            setError("El correo electrónico no es válido.");
+            setError(t('auth.err_email'));
             setLoading(false);
             return;
         }
 
         if (password.length < 6) {
-            setError("La contraseña debe tener al menos 6 caracteres.");
+            setError(t('auth.err_pass'));
             setLoading(false);
             return;
         }
 
         try {
-            // 1. CREAR USUARIO
             const { data: authData, error: authError } = await supabase.auth.signUp({
                 email,
                 password,
@@ -79,7 +77,6 @@ export const SignUpForm: React.FC = () => {
 
             if (authError) throw authError;
 
-            // 2. SUBIDA SEGURA DEL AVATAR
             if (avatarFile && authData.user) {
                 const fileExt = avatarFile.name.split('.').pop();
                 const fileName = `${authData.user.id}-${Date.now()}.${fileExt}`;
@@ -97,23 +94,18 @@ export const SignUpForm: React.FC = () => {
                         .from('perfiles')
                         .update({ avatar: urlData.publicUrl })
                         .eq('id', authData.user.id);
-                } else {
-                    console.error("Error subiendo foto:", uploadError);
                 }
             }
 
-            // NUEVO: 3. AUTO-LOGIN 
-            // Forzamos a Zustand a leer la sesión recién creada para que las rutas protegidas se abran
             await checkSession();
 
-            // 4. ÉXITO Y REDIRECCIÓN DIRECTA
             setSuccess(true);
             setTimeout(() => {
                 navigate('/app/panel');
-            }, 1500); // Reducido un poco el tiempo para que sea más ágil
+            }, 1500);
 
         } catch (err: any) {
-            setError(err.message || 'Error inesperado al crear la cuenta');
+            setError(err.message || t('common.error'));
         } finally {
             setLoading(false);
         }
@@ -123,8 +115,8 @@ export const SignUpForm: React.FC = () => {
         return (
             <div className="flex flex-col items-center justify-center space-y-4 py-8">
                 <CheckCircle2 className="h-16 w-16 text-green-500 animate-bounce" />
-                <h3 className="text-2xl font-bold text-stone-800 dark:text-stone-100">¡Cuenta creada con éxito!</h3>
-                <p className="text-stone-600 dark:text-stone-400">Redirigiendo a tu panel de control...</p>
+                <h3 className="text-2xl font-bold text-stone-800 dark:text-stone-100">{t('auth.signup_success_title')}</h3>
+                <p className="text-stone-600 dark:text-stone-400">{t('auth.signup_success_desc')}</p>
             </div>
         );
     }
@@ -138,30 +130,26 @@ export const SignUpForm: React.FC = () => {
                 </div>
             )}
 
-            {/* SECCIÓN DEL AVATAR VISUAL */}
             <div className="flex flex-col items-center justify-center mb-6">
                 <div
                     onClick={() => fileInputRef.current?.click()}
                     className="relative h-24 w-24 rounded-full border-2 border-dashed border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/50 flex items-center justify-center cursor-pointer overflow-hidden group hover:border-primary hover:bg-stone-100 transition-all shadow-sm"
-                    title="Haz clic para subir tu foto"
                 >
                     {avatarPreview ? (
                         <img src={avatarPreview} alt="Vista previa" className="h-full w-full object-cover" />
                     ) : (
                         <div className="text-stone-400 flex flex-col items-center">
                             <User className="h-8 w-8 mb-1 opacity-50" />
-                            <span className="text-[10px] uppercase font-bold tracking-wider">Foto</span>
+                            <span className="text-[10px] uppercase font-bold tracking-wider">{t('auth.signup_photo')}</span>
                         </div>
                     )}
 
-                    {/* Efecto hover sobre la imagen */}
                     <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <Upload className="h-6 w-6 text-white mb-1" />
-                        <span className="text-[10px] text-white font-bold uppercase">Subir</span>
+                        <span className="text-[10px] text-white font-bold uppercase">{t('auth.signup_upload')}</span>
                     </div>
                 </div>
 
-                {/* Input de archivo oculto */}
                 <input
                     type="file"
                     ref={fileInputRef}
@@ -171,13 +159,12 @@ export const SignUpForm: React.FC = () => {
                 />
             </div>
 
-            {/* RESTO DEL FORMULARIO */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <Label htmlFor="nombre" className="text-stone-800 dark:text-stone-200 font-medium">Nombre</Label>
+                    <Label htmlFor="nombre" className="text-stone-800 dark:text-stone-200 font-medium">{t('auth.signup_name')}</Label>
                     <Input
                         id="nombre"
-                        placeholder="Juan"
+                        placeholder={t('auth.signup_name_ph')}
                         value={nombre}
                         onChange={(e) => setNombre(e.target.value)}
                         disabled={loading}
@@ -185,10 +172,10 @@ export const SignUpForm: React.FC = () => {
                     />
                 </div>
                 <div className="space-y-1.5">
-                    <Label htmlFor="apellidos" className="text-stone-800 dark:text-stone-200 font-medium">Apellidos</Label>
+                    <Label htmlFor="apellidos" className="text-stone-800 dark:text-stone-200 font-medium">{t('auth.signup_surname')}</Label>
                     <Input
                         id="apellidos"
-                        placeholder="Pérez"
+                        placeholder={t('auth.signup_surname_ph')}
                         value={apellidos}
                         onChange={(e) => setApellidos(e.target.value)}
                         disabled={loading}
@@ -198,11 +185,11 @@ export const SignUpForm: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-                <Label htmlFor="email" className="text-stone-800 dark:text-stone-200 font-medium">Correo Electrónico</Label>
+                <Label htmlFor="email" className="text-stone-800 dark:text-stone-200 font-medium">{t('login.email')}</Label>
                 <Input
                     id="email"
                     type="email"
-                    placeholder="juan@ejemplo.com"
+                    placeholder={t('login.email_placeholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     disabled={loading}
@@ -211,10 +198,10 @@ export const SignUpForm: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-stone-800 dark:text-stone-200 font-medium">Contraseña (Mínimo 6 caracteres)</Label>
+                <Label htmlFor="password" className="text-stone-800 dark:text-stone-200 font-medium">{t('auth.signup_pass_hint')}</Label>
                 <PasswordInput
                     id="password"
-                    placeholder="••••••••"
+                    placeholder={t('login.password_placeholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
@@ -230,17 +217,17 @@ export const SignUpForm: React.FC = () => {
                 {loading ? (
                     <>
                         <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        Creando cuenta...
+                        {t('auth.signup_loading')}
                     </>
                 ) : (
-                    'Crear Cuenta'
+                    t('auth.signup_submit')
                 )}
             </Button>
 
             <div className="text-center mt-6 text-sm text-stone-600 dark:text-stone-400">
-                ¿Ya tienes una cuenta?{' '}
+                {t('auth.signup_already')}{' '}
                 <Link to="/login" className="font-medium text-primary hover:underline">
-                    Inicia sesión aquí
+                    {t('auth.signup_login_link')}
                 </Link>
             </div>
         </form>

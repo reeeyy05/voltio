@@ -32,7 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
 
                     {showLogo && (
                         <Link to="/" className="flex items-center hover:opacity-80 transition-opacity">
-                            <img src="/logo.png" alt="Logo Voltio" className="h-10 w-auto object-contain drop-shadow-sm" />
+                            <img src="/logo.png" alt="Logo Voltio" className="h-15 w-auto object-contain drop-shadow-sm" />
                         </Link>
                     )}
                 </div>

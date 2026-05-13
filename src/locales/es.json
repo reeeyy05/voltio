@@ -150,5 +150,37 @@
     "inventario": {
         "title": "Inventario y Materiales",
         "subtitle": "Próximamente: Control de stock y consumo de recursos."
+    },
+    "auth": {
+        "signin_loading": "Iniciando sesión...",
+        "signup_loading": "Creando cuenta...",
+        "signup_success_title": "¡Cuenta creada con éxito!",
+        "signup_success_desc": "Redirigiendo a tu panel de control...",
+        "signup_photo": "Foto",
+        "signup_upload": "Subir",
+        "signup_name": "Nombre",
+        "signup_name_ph": "Juan",
+        "signup_surname": "Apellidos",
+        "signup_surname_ph": "Pérez",
+        "signup_pass_hint": "Contraseña (Mínimo 6 caracteres)",
+        "signup_submit": "Crear Cuenta",
+        "signup_already": "¿Ya tienes una cuenta?",
+        "signup_login_link": "Inicia sesión aquí",
+        "err_name": "El nombre ingresado no es válido.",
+        "err_email": "El correo electrónico no es válido.",
+        "err_pass": "La contraseña debe tener al menos 6 caracteres.",
+        "err_img_size": "La imagen no debe superar los 2MB"
+    },
+    "profile": {
+        "title": "Mi Perfil",
+        "name": "Nombre",
+        "surname": "Apellidos",
+        "email": "Correo electrónico",
+        "logout": "Cerrar Sesión",
+        "change_photo": "Cambiar",
+        "uploading": "Subiendo...",
+        "err_size": "La imagen no debe superar los 2MB.",
+        "err_upload": "Error al subir la imagen. Inténtalo de nuevo.",
+        "success_upload": "¡Foto actualizada con éxito!"
     }
 }

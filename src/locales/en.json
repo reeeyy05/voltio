@@ -150,5 +150,37 @@
     "inventario": {
         "title": "Inventory & Materials",
         "subtitle": "Coming soon: Stock control and resource consumption."
+    },
+    "auth": {
+        "signin_loading": "Signing in...",
+        "signup_loading": "Creating account...",
+        "signup_success_title": "Account created successfully!",
+        "signup_success_desc": "Redirecting to your dashboard...",
+        "signup_photo": "Photo",
+        "signup_upload": "Upload",
+        "signup_name": "Name",
+        "signup_name_ph": "John",
+        "signup_surname": "Last Name",
+        "signup_surname_ph": "Doe",
+        "signup_pass_hint": "Password (Minimum 6 characters)",
+        "signup_submit": "Create Account",
+        "signup_already": "Already have an account?",
+        "signup_login_link": "Log in here",
+        "err_name": "The name entered is invalid.",
+        "err_email": "The email address is invalid.",
+        "err_pass": "The password must be at least 6 characters long.",
+        "err_img_size": "The image must not exceed 2MB"
+    },
+    "profile": {
+        "title": "My Profile",
+        "name": "First Name",
+        "surname": "Last Name",
+        "email": "Email address",
+        "logout": "Sign Out",
+        "change_photo": "Change",
+        "uploading": "Uploading...",
+        "err_size": "The image must not exceed 2MB.",
+        "err_upload": "Error uploading image. Please try again.",
+        "success_upload": "Photo updated successfully!"
     }
 }
