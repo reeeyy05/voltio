@@ -8,6 +8,7 @@ interface AdminState {
     error: string | null;
     fetchUsuarios: () => Promise<void>;
     updateRolUsuario: (id: string, nuevoRol: RolUsuario) => Promise<void>;
+    updateDetallesUsuario: (id: string, nombre: string, apellidos: string) => Promise<void>;
     deleteUsuario: (id: string) => Promise<void>;
 }
 
@@ -16,14 +17,13 @@ export const useAdminStore = create<AdminState>((set, get) => ({
     isLoading: false,
     error: null,
 
-    // 1. LEER TODOS LOS USUARIOS (Read)
     fetchUsuarios: async () => {
         set({ isLoading: true, error: null });
         try {
             const { data, error } = await supabase
                 .from('perfiles')
                 .select('*')
-                .order('nombre', { ascending: true }); // Ordenados alfabéticamente
+                .order('nombre', { ascending: true });
 
             if (error) throw error;
             set({ usuarios: data as Perfil[] });
@@ -34,53 +34,43 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         }
     },
 
-    // 2. ACTUALIZAR ROL (Update)
     updateRolUsuario: async (id: string, nuevoRol: RolUsuario) => {
-        set({ isLoading: true, error: null });
         try {
-            const { error } = await supabase
-                .from('perfiles')
-                .update({ rol: nuevoRol })
-                .eq('id', id);
-
+            const { error } = await supabase.from('perfiles').update({ rol: nuevoRol }).eq('id', id);
             if (error) throw error;
 
-            // Actualizamos la tabla localmente sin tener que recargar la página
             const { usuarios } = get();
-            set({
-                usuarios: usuarios.map(u => u.id === id ? { ...u, rol: nuevoRol } : u)
-            });
+            set({ usuarios: usuarios.map(u => u.id === id ? { ...u, rol: nuevoRol } : u) });
         } catch (error: any) {
-            set({ error: error.message });
-            throw error; // Lanzamos el error para que la UI pueda mostrar una alerta
-        } finally {
-            set({ isLoading: false });
+            console.error(error);
+            throw error;
         }
     },
 
-    // 3. ELIMINAR USUARIO (Delete)
-    deleteUsuario: async (id: string) => {
-        set({ isLoading: true, error: null });
+    // NUEVO: Función Update para el CRUD
+    updateDetallesUsuario: async (id: string, nombre: string, apellidos: string) => {
         try {
-            // Borramos el perfil. Como tu tabla tiene ON DELETE CASCADE o RLS estricto,
-            // esto dejará al usuario sin acceso a la aplicación.
-            const { error } = await supabase
-                .from('perfiles')
-                .delete()
-                .eq('id', id);
-
+            const { error } = await supabase.from('perfiles').update({ nombre, apellidos }).eq('id', id);
             if (error) throw error;
 
-            // Quitamos al usuario de la lista localmente
             const { usuarios } = get();
-            set({
-                usuarios: usuarios.filter(u => u.id !== id)
-            });
+            set({ usuarios: usuarios.map(u => u.id === id ? { ...u, nombre, apellidos } : u) });
         } catch (error: any) {
-            set({ error: error.message });
+            console.error(error);
             throw error;
-        } finally {
-            set({ isLoading: false });
+        }
+    },
+
+    deleteUsuario: async (id: string) => {
+        try {
+            const { error } = await supabase.from('perfiles').delete().eq('id', id);
+            if (error) throw error;
+
+            const { usuarios } = get();
+            set({ usuarios: usuarios.filter(u => u.id !== id) });
+        } catch (error: any) {
+            console.error(error);
+            throw error;
         }
     }
 }));

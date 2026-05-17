@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { HardHat, Loader2, MoreVertical, Plus, Calendar, CheckCircle2, Trash2, Clock } from 'lucide-react';
+import { HardHat, Loader2, MoreVertical, Plus, Calendar, CheckCircle2, Trash2, Clock, AlertCircle } from 'lucide-react';
 import { useObrasStore } from '@/stores/obraStore';
 
 export default function ObrasPage() {
@@ -22,23 +22,28 @@ export default function ObrasPage() {
     const [descripcion, setDescripcion] = useState('');
     const [isCreating, setIsCreating] = useState(false);
 
+    // Estado para capturar y mostrar errores de forma integrada y limpia
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
     useEffect(() => {
         fetchObras();
     }, [fetchObras]);
 
     const handleCreate = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Validación manual ya que quitamos los 'required'
         if (!nuevaObra.trim()) return;
 
         setIsCreating(true);
+        setErrorMsg(null); // Limpiamos errores anteriores antes de reintentar
+
         try {
             await createObra(nuevaObra, descripcion);
             setIsCreateOpen(false);
             setNuevaObra('');
             setDescripcion('');
         } catch (error) {
-            alert(t('obras.error_create'));
+            // En vez de alert(), guardamos el texto traducido en el estado
+            setErrorMsg(t('obras.error_create'));
         } finally {
             setIsCreating(false);
         }
@@ -57,7 +62,10 @@ export default function ObrasPage() {
                     </p>
                 </div>
 
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                <Dialog open={isCreateOpen} onOpenChange={(open) => {
+                    setIsCreateOpen(open);
+                    if (!open) setErrorMsg(null); // Limpia el error al cerrar el modal
+                }}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">
                             <Plus className="h-4 w-4" />
@@ -69,10 +77,18 @@ export default function ObrasPage() {
                             <DialogTitle>{t('obras.create_title')}</DialogTitle>
                             <DialogDescription>{t('obras.create_desc')}</DialogDescription>
                         </DialogHeader>
+
                         <form onSubmit={handleCreate} className="space-y-4 mt-4">
+                            {/* ALERTA VISUAL INTEGRADA (Reemplazo del alert nativo) */}
+                            {errorMsg && (
+                                <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-3 rounded-lg flex items-start gap-2 text-sm">
+                                    <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                                    <span>{errorMsg}</span>
+                                </div>
+                            )}
+
                             <div className="space-y-2">
                                 <Label htmlFor="nombreObra">{t('obras.form_name')}</Label>
-                                {/* SIN ATRIBUTO REQUIRED */}
                                 <Input id="nombreObra" placeholder={t('obras.form_name_ph')} value={nuevaObra} onChange={e => setNuevaObra(e.target.value)} />
                             </div>
                             <div className="space-y-2">

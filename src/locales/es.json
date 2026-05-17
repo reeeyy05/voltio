@@ -145,7 +145,12 @@
         "delete_confirm_desc": "Esta acción eliminará el perfil del usuario y le impedirá acceder a sus obras y tareas asignadas. Esta acción no se puede deshacer.",
         "delete_cancel": "Cancelar",
         "delete_confirm": "Sí, eliminar usuario",
-        "error_validation": "Por favor, completa todos los campos correctamente."
+        "error_validation": "Por favor, completa todos los campos correctamente.",
+        "action_edit": "Editar Usuario",
+        "edit_title": "Editar Empleado",
+        "edit_desc": "Modifica la información personal del usuario.",
+        "form_surname": "Apellidos",
+        "submit_edit": "Guardar Cambios"
     },
     "inventario": {
         "title": "Inventario y Materiales",
@@ -182,5 +187,13 @@
         "err_size": "La imagen no debe superar los 2MB.",
         "err_upload": "Error al subir la imagen. Inténtalo de nuevo.",
         "success_upload": "¡Foto actualizada con éxito!"
+    },
+    "data_table": {
+        "search": "Buscar en todas las columnas...",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "page": "Página",
+        "of": "de",
+        "no_results": "No se encontraron resultados."
     }
 }

@@ -6,7 +6,7 @@ export type EstadoObra = 'En curso' | 'Finalizada';
 export interface Obra {
     id: string;
     nombre: string;
-    descripcion?: string | null; // NUEVO CAMPO
+    descripcion?: string | null;
     estado: EstadoObra;
     creado_en: string;
 }
@@ -16,7 +16,7 @@ interface ObrasState {
     isLoading: boolean;
     error: string | null;
     fetchObras: () => Promise<void>;
-    createObra: (nombre: string, descripcion?: string) => Promise<void>; // Actualizado
+    createObra: (nombre: string, descripcion?: string) => Promise<void>;
     updateEstadoObra: (id: string, nuevoEstado: EstadoObra) => Promise<void>;
     deleteObra: (id: string) => Promise<void>;
 }
@@ -26,7 +26,6 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
     isLoading: false,
     error: null,
 
-    // Ahora todos ven todas las obras de la empresa
     fetchObras: async () => {
         set({ isLoading: true, error: null });
         try {
@@ -47,15 +46,20 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
     createObra: async (nombre: string, descripcion?: string) => {
         set({ isLoading: true, error: null });
         try {
+            // FIX: Convertimos strings vacíos a null para evitar bloqueos en BD
             const { error } = await supabase
                 .from('obras')
-                .insert([{ nombre, descripcion, estado: 'En curso' }]);
+                .insert([{ 
+                    nombre, 
+                    descripcion: descripcion?.trim() ? descripcion : null, 
+                    estado: 'En curso' 
+                }]);
 
             if (error) throw error;
             await get().fetchObras();
         } catch (error: any) {
             set({ error: error.message });
-            throw error;
+            throw error; // Lanzamos el error para que la UI lo capture
         } finally {
             set({ isLoading: false });
         }

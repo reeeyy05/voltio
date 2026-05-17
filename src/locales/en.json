@@ -145,7 +145,12 @@
         "delete_confirm_desc": "This action will delete the user's profile and prevent them from accessing their assigned works and tasks. This action cannot be undone.",
         "delete_cancel": "Cancel",
         "delete_confirm": "Yes, delete user",
-        "error_validation": "Please fill all fields correctly."
+        "error_validation": "Please fill all fields correctly.",
+        "action_edit": "Edit User",
+        "edit_title": "Edit Employee",
+        "edit_desc": "Modify the user's personal information.",
+        "form_surname": "Last Name",
+        "submit_edit": "Save Changes"
     },
     "inventario": {
         "title": "Inventory & Materials",
@@ -182,5 +187,13 @@
         "err_size": "The image must not exceed 2MB.",
         "err_upload": "Error uploading image. Please try again.",
         "success_upload": "Photo updated successfully!"
+    },
+    "data_table": {
+        "search": "Search in all columns...",
+        "previous": "Previous",
+        "next": "Next",
+        "page": "Page",
+        "of": "of",
+        "no_results": "No results found."
     }
 }
