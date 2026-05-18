@@ -154,7 +154,18 @@
     },
     "inventario": {
         "title": "Inventario y Materiales",
-        "subtitle": "Próximamente: Control de stock y consumo de recursos."
+        "subtitle": "Control de stock y gestión de recursos.",
+        "add_material": "Añadir Material",
+        "create_title": "Registrar nuevo material",
+        "create_desc": "Añade un nuevo recurso al inventario general.",
+        "form_name": "Nombre del material",
+        "form_name_ph": "Ej: Cable de cobre 2.5mm",
+        "form_desc": "Descripción (Opcional)",
+        "form_qty": "Cantidad inicial",
+        "form_unit": "Unidad de medida",
+        "form_unit_ph": "Ej: metros, uds, bobinas...",
+        "submit_create": "Guardar Material",
+        "delete": "Eliminar"
     },
     "auth": {
         "signin_loading": "Iniciando sesión...",

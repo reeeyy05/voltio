@@ -154,7 +154,18 @@
     },
     "inventario": {
         "title": "Inventory & Materials",
-        "subtitle": "Coming soon: Stock control and resource consumption."
+        "subtitle": "Stock control and resource management.",
+        "add_material": "Add Material",
+        "create_title": "Register new material",
+        "create_desc": "Add a new resource to the general inventory.",
+        "form_name": "Material name",
+        "form_name_ph": "Ex: 2.5mm copper wire",
+        "form_desc": "Description (Optional)",
+        "form_qty": "Initial quantity",
+        "form_unit": "Unit of measurement",
+        "form_unit_ph": "Ex: meters, pcs, rolls...",
+        "submit_create": "Save Material",
+        "delete": "Delete"
     },
     "auth": {
         "signin_loading": "Signing in...",

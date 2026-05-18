@@ -1,32 +1,37 @@
 import { create } from 'zustand';
 import { supabase } from '@/Supabase/Client';
 
-export type EstadoTarea = 'Pendiente' | 'Completada';
+// Ajustado al Check SQL: ('Pendiente', 'En curso', 'Finalizada')
+export type EstadoTarea = 'Pendiente' | 'En curso' | 'Finalizada';
 
 export interface Tarea {
     id: string;
     obra_id: string;
-    titulo: string;
-    descripcion: string | null;
+    // Ajustado a los nombres de tu tabla en SQL
+    descripcion: string;
     estado: EstadoTarea;
-    asignado_a: string | null;
-    creado_en: string;
-    // Relación con la tabla perfiles para mostrar el nombre del asignado
+    empleado_id: string;
+    // Relación con Obras (para saber a qué obra pertenece)
+    obras?: { nombre: string } | null;
+    // Relación con Perfiles (para saber quién la tiene)
     perfiles?: { nombre: string; apellidos: string } | null;
 }
 
 interface TareasState {
     tareas: Tarea[];
+    misTareas: Tarea[]; // Nuevo: Lista global de tareas del empleado
     isLoading: boolean;
     error: string | null;
     fetchTareasPorObra: (obraId: string) => Promise<void>;
-    createTarea: (tarea: Omit<Tarea, 'id' | 'creado_en' | 'perfiles'>) => Promise<void>;
+    fetchTareasDelEmpleado: (empleadoId: string) => Promise<void>; // NUEVA FUNCIÓN
+    createTarea: (tarea: Omit<Tarea, 'id' | 'obras' | 'perfiles'>) => Promise<void>;
     updateEstadoTarea: (id: string, nuevoEstado: EstadoTarea) => Promise<void>;
     deleteTarea: (id: string) => Promise<void>;
 }
 
 export const useTareasStore = create<TareasState>((set, get) => ({
     tareas: [],
+    misTareas: [],
     isLoading: false,
     error: null,
 
@@ -37,13 +42,32 @@ export const useTareasStore = create<TareasState>((set, get) => ({
                 .from('tareas')
                 .select(`
                     *,
-                    perfiles:asignado_a (nombre, apellidos)
+                    perfiles:empleado_id (nombre, apellidos)
                 `)
-                .eq('obra_id', obraId)
-                .order('creado_en', { ascending: false });
+                .eq('obra_id', obraId);
 
             if (error) throw error;
             set({ tareas: data as Tarea[] });
+        } catch (error: any) {
+            set({ error: error.message });
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    fetchTareasDelEmpleado: async (empleadoId: string) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { data, error } = await supabase
+                .from('tareas')
+                .select(`
+                    *,
+                    obras:obra_id (nombre)
+                `)
+                .eq('empleado_id', empleadoId);
+
+            if (error) throw error;
+            set({ misTareas: data as Tarea[] });
         } catch (error: any) {
             set({ error: error.message });
         } finally {
@@ -70,9 +94,12 @@ export const useTareasStore = create<TareasState>((set, get) => ({
             const { error } = await supabase.from('tareas').update({ estado: nuevoEstado }).eq('id', id);
             if (error) throw error;
 
-            // Actualización optimista en local
-            const { tareas } = get();
-            set({ tareas: tareas.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t) });
+            // Actualización optimista en local para ambas listas
+            const { tareas, misTareas } = get();
+            set({
+                tareas: tareas.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t),
+                misTareas: misTareas.map(t => t.id === id ? { ...t, estado: nuevoEstado } : t)
+            });
         } catch (error: any) {
             console.error("Error al actualizar tarea:", error);
             throw error;
@@ -84,8 +111,11 @@ export const useTareasStore = create<TareasState>((set, get) => ({
             const { error } = await supabase.from('tareas').delete().eq('id', id);
             if (error) throw error;
 
-            const { tareas } = get();
-            set({ tareas: tareas.filter(t => t.id !== id) });
+            const { tareas, misTareas } = get();
+            set({
+                tareas: tareas.filter(t => t.id !== id),
+                misTareas: misTareas.filter(t => t.id !== id)
+            });
         } catch (error: any) {
             console.error("Error al eliminar tarea:", error);
             throw error;

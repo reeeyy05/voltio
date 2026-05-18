@@ -2,10 +2,12 @@ import { useState } from "react"
 import { useTranslation } from "react-i18next"
 import {
     type ColumnDef,
+    type SortingState,
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
     getFilteredRowModel,
+    getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
 
@@ -16,7 +18,7 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table" // Importamos tu diseño de tabla
+} from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search } from "lucide-react"
@@ -31,6 +33,7 @@ export function DataTable<TData, TValue>({
     data,
 }: DataTableProps<TData, TValue>) {
     const [globalFilter, setGlobalFilter] = useState("")
+    const [sorting, setSorting] = useState<SortingState>([])
     const { t } = useTranslation()
 
     const table = useReactTable({
@@ -39,10 +42,13 @@ export function DataTable<TData, TValue>({
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        getSortedRowModel: getSortedRowModel(),
         state: {
             globalFilter,
+            sorting,
         },
         onGlobalFilterChange: setGlobalFilter,
+        onSortingChange: setSorting,
     })
 
     return (

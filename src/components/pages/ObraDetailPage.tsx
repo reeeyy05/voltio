@@ -11,7 +11,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
 import { ArrowLeft, CheckCircle2, Circle, HardHat, Loader2, Plus, Trash2, User, MapPin, Star } from 'lucide-react';
 import type { Obra } from '@/stores/obraStore';
 import { Card, CardContent } from '../ui/card';
@@ -29,7 +28,8 @@ export default function ObraDetailPage() {
     const [isLoadingObra, setIsLoadingObra] = useState(true);
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    const [nuevaTarea, setNuevaTarea] = useState({ titulo: '', descripcion: '', asignado_a: '' });
+    // FIX: Cambiamos 'titulo' y 'asignado_a' por 'descripcion' y 'empleado_id' para coincidir con la Base de Datos
+    const [nuevaTarea, setNuevaTarea] = useState({ descripcion: '', empleado_id: '' });
 
     useEffect(() => {
         if (!id) return;
@@ -47,27 +47,27 @@ export default function ObraDetailPage() {
 
     const handleCreateTarea = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Validación manual ya que quitamos los 'required'
-        if (!id || !nuevaTarea.titulo.trim() || !nuevaTarea.asignado_a) return;
+
+        // Validación asegurando que tenemos la descripción y el empleado
+        if (!id || !nuevaTarea.descripcion.trim() || !nuevaTarea.empleado_id) return;
 
         await createTarea({
             obra_id: id,
-            titulo: nuevaTarea.titulo,
-            descripcion: nuevaTarea.descripcion || null,
+            descripcion: nuevaTarea.descripcion,
             estado: 'Pendiente',
-            asignado_a: nuevaTarea.asignado_a
+            empleado_id: nuevaTarea.empleado_id
         });
 
         setIsCreateOpen(false);
-        setNuevaTarea({ titulo: '', descripcion: '', asignado_a: '' });
+        setNuevaTarea({ descripcion: '', empleado_id: '' });
     };
 
     if (isLoadingObra) return <div className="p-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     if (!obra) return <div className="p-20 text-center text-red-500">{t('obra_detail.not_found')}</div>;
 
     const tareasOrdenadas = [...tareas].sort((a, b) => {
-        const aEsMia = a.asignado_a === perfil?.id;
-        const bEsMia = b.asignado_a === perfil?.id;
+        const aEsMia = a.empleado_id === perfil?.id;
+        const bEsMia = b.empleado_id === perfil?.id;
         if (aEsMia && !bEsMia) return -1;
         if (!aEsMia && bEsMia) return 1;
         return 0;
@@ -112,17 +112,13 @@ export default function ObraDetailPage() {
                         <form onSubmit={handleCreateTarea} className="space-y-4 mt-4">
                             <div className="space-y-2">
                                 <Label>{t('obra_detail.task_title')}</Label>
-                                {/* SIN ATRIBUTO REQUIRED */}
-                                <Input value={nuevaTarea.titulo} onChange={e => setNuevaTarea({ ...nuevaTarea, titulo: e.target.value })} placeholder={t('obra_detail.task_title_ph')} />
+                                {/* Usamos el input principal como Descripción para la BD */}
+                                <Input value={nuevaTarea.descripcion} onChange={e => setNuevaTarea({ ...nuevaTarea, descripcion: e.target.value })} placeholder={t('obra_detail.task_title_ph')} />
                             </div>
-                            <div className="space-y-2">
-                                <Label>{t('obra_detail.task_details')}</Label>
-                                <Textarea value={nuevaTarea.descripcion} onChange={e => setNuevaTarea({ ...nuevaTarea, descripcion: e.target.value })} />
-                            </div>
+
                             <div className="space-y-2">
                                 <Label>{t('obra_detail.task_assignee')}</Label>
-                                {/* SIN ATRIBUTO REQUIRED */}
-                                <Select onValueChange={(v) => setNuevaTarea({ ...nuevaTarea, asignado_a: v })}>
+                                <Select onValueChange={(v) => setNuevaTarea({ ...nuevaTarea, empleado_id: v })}>
                                     <SelectTrigger><SelectValue placeholder={t('obra_detail.task_assignee_ph')} /></SelectTrigger>
                                     <SelectContent>
                                         {usuarios.map(u => <SelectItem key={u.id} value={u.id}>{u.nombre} {u.apellidos}</SelectItem>)}
@@ -146,28 +142,28 @@ export default function ObraDetailPage() {
             ) : (
                 <div className="grid gap-3">
                     {tareasOrdenadas.map(tarea => {
-                        const esMiTarea = tarea.asignado_a === perfil?.id;
+                        const esMiTarea = tarea.empleado_id === perfil?.id;
 
-                        const cardClasses = `transition-colors border-stone-200 dark:border-stone-800 ${tarea.estado === 'Completada' ? 'bg-stone-50/50 dark:bg-stone-900/30 opacity-75' : ''} ${esMiTarea && tarea.estado !== 'Completada' ? 'border-primary/50 shadow-sm ring-1 ring-primary/20' : ''}`;
+                        const cardClasses = `transition-colors border-stone-200 dark:border-stone-800 ${tarea.estado === 'Finalizada' ? 'bg-stone-50/50 dark:bg-stone-900/30 opacity-75' : ''} ${esMiTarea && tarea.estado !== 'Finalizada' ? 'border-primary/50 shadow-sm ring-1 ring-primary/20' : ''}`;
 
                         return (
                             <Card key={tarea.id} className={cardClasses}>
                                 <CardContent className="p-4 flex items-start sm:items-center justify-between gap-4">
                                     <div className="flex items-start gap-3 flex-1">
                                         <button
-                                            onClick={() => updateEstadoTarea(tarea.id, tarea.estado === 'Pendiente' ? 'Completada' : 'Pendiente')}
+                                            onClick={() => updateEstadoTarea(tarea.id, tarea.estado === 'Pendiente' || tarea.estado === 'En curso' ? 'Finalizada' : 'Pendiente')}
                                             className="mt-1 flex-shrink-0 hover:scale-110 transition-transform"
                                             title={t('obra_detail.mark_task')}
                                         >
-                                            {tarea.estado === 'Completada'
+                                            {tarea.estado === 'Finalizada'
                                                 ? <CheckCircle2 className="h-6 w-6 text-green-500" />
                                                 : <Circle className={`h-6 w-6 ${esMiTarea ? 'text-primary' : 'text-stone-300'}`} />
                                             }
                                         </button>
                                         <div>
                                             <div className="flex flex-wrap items-center gap-2">
-                                                <h3 className={`font-semibold ${tarea.estado === 'Completada' ? 'line-through text-stone-500' : 'text-stone-800 dark:text-stone-100'}`}>
-                                                    {tarea.titulo}
+                                                <h3 className={`font-semibold ${tarea.estado === 'Finalizada' ? 'line-through text-stone-500' : 'text-stone-800 dark:text-stone-100'}`}>
+                                                    {tarea.descripcion}
                                                 </h3>
                                                 {esMiTarea && (
                                                     <Badge variant="default" className="text-[10px] h-5 py-0 px-1.5 bg-primary">
@@ -175,7 +171,6 @@ export default function ObraDetailPage() {
                                                     </Badge>
                                                 )}
                                             </div>
-                                            {tarea.descripcion && <p className="text-sm text-stone-500 mt-1">{tarea.descripcion}</p>}
                                             <Badge variant="outline" className={`text-xs mt-2 ${esMiTarea ? 'bg-primary/5 border-primary/20' : 'bg-background'}`}>
                                                 <User className="h-3 w-3 mr-1" /> {tarea.perfiles?.nombre || t('obra_detail.unknown_user')}
                                             </Badge>

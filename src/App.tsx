@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 import MainLayout from './layouts/MainLayout';
 import LandingPage from './components/pages/LandingPage';
 import SignInPage from './components/pages/SignInPage';
@@ -13,24 +12,8 @@ import UsersManagementPage from './components/pages/UsersManagementPage';
 import DashboardPage from './components/pages/DashboardPage';
 import ObrasPage from './components/pages/ObrasPage';
 import ObraDetailPage from './components/pages/ObraDetailPage';
-import { Package } from 'lucide-react';
-
-const InventarioPage = () => {
-  const { t } = useTranslation();
-  return (
-    <div className="p-6 max-w-6xl mx-auto space-y-6">
-      <div className="flex items-center gap-3 mb-8">
-        <Package className="h-8 w-8 text-primary" />
-        <div>
-          <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100">{t('inventario.title')}</h1>
-          <p className="text-stone-600 dark:text-stone-400 mt-1">
-            {t('inventario.subtitle')}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-};
+import InventarioPage from './components/pages/InventarioPage';
+import { Toaster } from "@/components/ui/sonner"; // IMPORTAMOS EL TOASTER
 
 export default function App() {
   const { checkSession } = useAuthStore();
@@ -72,6 +55,9 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+
+      {/* AÑADIMOS EL TOASTER AQUÍ PARA TODA LA APP */}
+      <Toaster position="bottom-right" richColors />
     </BrowserRouter>
   );
 }

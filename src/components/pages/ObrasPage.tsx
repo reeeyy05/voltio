@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner'; // IMPORTAMOS SONNER
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -21,8 +22,6 @@ export default function ObrasPage() {
     const [nuevaObra, setNuevaObra] = useState('');
     const [descripcion, setDescripcion] = useState('');
     const [isCreating, setIsCreating] = useState(false);
-
-    // Estado para capturar y mostrar errores de forma integrada y limpia
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     useEffect(() => {
@@ -34,18 +33,38 @@ export default function ObrasPage() {
         if (!nuevaObra.trim()) return;
 
         setIsCreating(true);
-        setErrorMsg(null); // Limpiamos errores anteriores antes de reintentar
+        setErrorMsg(null);
 
         try {
             await createObra(nuevaObra, descripcion);
             setIsCreateOpen(false);
             setNuevaObra('');
             setDescripcion('');
+            toast.success("Obra creada correctamente"); // TOAST ÉXITO
         } catch (error) {
-            // En vez de alert(), guardamos el texto traducido en el estado
             setErrorMsg(t('obras.error_create'));
+            toast.error("No se pudo crear la obra"); // TOAST ERROR
         } finally {
             setIsCreating(false);
+        }
+    };
+
+    const handleUpdateEstado = async (id: string, estadoActual: string) => {
+        const nuevoEstado = estadoActual === 'En curso' ? 'Finalizada' : 'En curso';
+        try {
+            await updateEstadoObra(id, nuevoEstado);
+            toast.success(`Estado actualizado a ${nuevoEstado}`);
+        } catch (error) {
+            toast.error("Error al actualizar el estado");
+        }
+    };
+
+    const handleDelete = async (id: string) => {
+        try {
+            await deleteObra(id);
+            toast.success("Obra eliminada permanentemente");
+        } catch (error) {
+            toast.error("Error al eliminar la obra");
         }
     };
 
@@ -64,7 +83,7 @@ export default function ObrasPage() {
 
                 <Dialog open={isCreateOpen} onOpenChange={(open) => {
                     setIsCreateOpen(open);
-                    if (!open) setErrorMsg(null); // Limpia el error al cerrar el modal
+                    if (!open) setErrorMsg(null);
                 }}>
                     <DialogTrigger asChild>
                         <Button className="flex items-center gap-2">
@@ -79,7 +98,6 @@ export default function ObrasPage() {
                         </DialogHeader>
 
                         <form onSubmit={handleCreate} className="space-y-4 mt-4">
-                            {/* ALERTA VISUAL INTEGRADA (Reemplazo del alert nativo) */}
                             {errorMsg && (
                                 <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-3 rounded-lg flex items-start gap-2 text-sm">
                                     <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
@@ -133,12 +151,12 @@ export default function ObrasPage() {
                                     <DropdownMenuContent align="end">
                                         <DropdownMenuLabel>{t('obras.management')}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => updateEstadoObra(obra.id, obra.estado === 'En curso' ? 'Finalizada' : 'En curso')}>
+                                        <DropdownMenuItem onClick={() => handleUpdateEstado(obra.id, obra.estado)}>
                                             {obra.estado === 'En curso' ? <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> : <Clock className="mr-2 h-4 w-4 text-amber-500" />}
                                             {obra.estado === 'En curso' ? t('obras.finish') : t('obras.reopen')}
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
-                                        <DropdownMenuItem onClick={() => deleteObra(obra.id)} className="text-red-600">
+                                        <DropdownMenuItem onClick={() => handleDelete(obra.id)} className="text-red-600">
                                             <Trash2 className="mr-2 h-4 w-4" /> {t('obras.delete')}
                                         </DropdownMenuItem>
                                     </DropdownMenuContent>

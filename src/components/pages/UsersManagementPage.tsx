@@ -4,6 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/ui/data-table';
+import { toast } from 'sonner';
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
@@ -13,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { MoreHorizontal, Shield, ShieldAlert, Trash2, UserPlus, Loader2, Users, Edit } from 'lucide-react';
+import { MoreHorizontal, Shield, ShieldAlert, Trash2, UserPlus, Loader2, Users, Edit, ArrowUpDown } from 'lucide-react';
 import type { Perfil } from '@/stores/authStore';
 
 export default function UsersManagementPage() {
@@ -23,7 +24,7 @@ export default function UsersManagementPage() {
     const [userToDelete, setUserToDelete] = useState<string | null>(null);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    // Estados para Edición (UPDATE)
+    // Estados para Edición
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
@@ -42,7 +43,7 @@ export default function UsersManagementPage() {
     const handleCreateUser = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!newName.trim() || !newEmail.trim() || newPassword.length < 6) {
-            alert(t('users.error_validation'));
+            toast.warning("Completa todos los campos. La contraseña debe tener al menos 6 caracteres.");
             return;
         }
         setIsCreating(true);
@@ -63,8 +64,9 @@ export default function UsersManagementPage() {
             await fetchUsuarios();
             setIsCreateOpen(false);
             setNewEmail(''); setNewPassword(''); setNewName('');
+            toast.success("Usuario creado con éxito");
         } catch (error: any) {
-            alert(t('users.error_create') + error.message);
+            toast.error("Error al crear usuario: " + error.message);
         } finally {
             setIsCreating(false);
         }
@@ -80,31 +82,53 @@ export default function UsersManagementPage() {
     const handleEditUser = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userToEdit || !editName.trim()) {
-            alert(t('users.error_validation'));
+            toast.warning("El nombre es obligatorio");
             return;
         }
         setIsEditing(true);
         try {
             await updateDetallesUsuario(userToEdit, editName, editSurname);
             setIsEditOpen(false);
+            toast.success("Información actualizada");
         } catch (error: any) {
-            alert("Error al actualizar usuario");
+            toast.error("Error al actualizar usuario");
         } finally {
             setIsEditing(false);
         }
     };
 
+    const handleRoleChange = async (id: string, newRole: 'admin' | 'empleado') => {
+        try {
+            await updateRolUsuario(id, newRole);
+            toast.success(`Rol actualizado a ${newRole}`);
+        } catch (error) {
+            toast.error("Error al cambiar de rol");
+        }
+    }
+
     const handleDelete = async () => {
         if (!userToDelete) return;
-        await deleteUsuario(userToDelete);
-        setUserToDelete(null);
+        try {
+            await deleteUsuario(userToDelete);
+            toast.success("Usuario eliminado");
+        } catch (error) {
+            toast.error("Error al eliminar el usuario");
+        } finally {
+            setUserToDelete(null);
+        }
     };
 
-    // DEFINICIÓN DE COLUMNAS PARA EL DATATABLE
     const columns = useMemo<ColumnDef<Perfil>[]>(() => [
         {
             accessorKey: "nombre",
-            header: t('users.col_user'),
+            header: ({ column }) => {
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4 hover:bg-stone-200 dark:hover:bg-stone-800">
+                        {t('users.col_user')}
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
             cell: ({ row }) => {
                 const user = row.original;
                 return (
@@ -131,12 +155,19 @@ export default function UsersManagementPage() {
         },
         {
             accessorKey: "email",
-            header: t('users.col_email'),
+            header: ({ column }) => {
+                return (
+                    <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")} className="-ml-4 hover:bg-stone-200 dark:hover:bg-stone-800">
+                        {t('users.col_email')}
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                )
+            },
             cell: ({ row }) => <span className="text-stone-600 dark:text-stone-400">{row.original.email}</span>,
         },
         {
             accessorKey: "rol",
-            header: t('users.col_role'),
+            header: t('users.col_role'), // AQUÍ NO PONEMOS ORDENACIÓN
             cell: ({ row }) => {
                 return row.original.rol === 'admin' ? (
                     <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 flex w-fit items-center gap-1">
@@ -173,12 +204,12 @@ export default function UsersManagementPage() {
                                 <DropdownMenuSeparator />
 
                                 {user.rol === 'empleado' ? (
-                                    <DropdownMenuItem onClick={() => updateRolUsuario(user.id, 'admin')}>
+                                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'admin')}>
                                         <Shield className="mr-2 h-4 w-4 text-amber-500" />
                                         {t('users.action_make_admin')}
                                     </DropdownMenuItem>
                                 ) : (
-                                    <DropdownMenuItem onClick={() => updateRolUsuario(user.id, 'empleado')}>
+                                    <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'empleado')}>
                                         <ShieldAlert className="mr-2 h-4 w-4 text-stone-500" />
                                         {t('users.action_remove_admin')}
                                     </DropdownMenuItem>
@@ -195,7 +226,7 @@ export default function UsersManagementPage() {
                 )
             }
         }
-    ], [t, updateRolUsuario]);
+    ], [t]);
 
     return (
         <div className="p-6 max-w-6xl mx-auto space-y-6">
@@ -251,7 +282,6 @@ export default function UsersManagementPage() {
                 <DataTable columns={columns} data={usuarios} />
             )}
 
-            {/* MODAL DE EDICIÓN (UPDATE) */}
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
                 <DialogContent>
                     <DialogHeader>

@@ -2,7 +2,6 @@ import { create } from 'zustand';
 import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/Supabase/Client';
 
-// Simplificado a 2 roles según los requerimientos del profesor[cite: 8]
 export type RolUsuario = 'admin' | 'empleado' | null;
 
 export interface Perfil {
@@ -18,22 +17,28 @@ interface AuthState {
     session: Session | null;
     perfil: Perfil | null;
     rol: RolUsuario;
-    isLoading: boolean; // Cambiado a false por defecto para evitar bloqueos iniciales[cite: 8]
+    isLoading: boolean;
     error: string | null;
     checkSession: () => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
     logout: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+// AÑADIDO: Incluimos 'get' para poder leer el estado actual dentro de las funciones
+export const useAuthStore = create<AuthState>((set, get) => ({
     session: null,
     perfil: null,
     rol: null,
-    isLoading: false, // ¡FIX!: Ahora empieza en false[cite: 8]
+    isLoading: false,
     error: null,
 
     checkSession: async () => {
-        set({ isLoading: true });
+        // FIX: Solo mostramos la pantalla de carga si NO hay una sesión activa.
+        // Si ya estamos dentro (ej: al cambiar de pestaña), la comprobación se hace en segundo plano.
+        if (!get().session) {
+            set({ isLoading: true });
+        }
+
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
@@ -48,6 +53,9 @@ export const useAuthStore = create<AuthState>((set) => ({
                     perfil: perfilData as Perfil,
                     rol: (perfilData?.rol as RolUsuario) || null
                 });
+            } else {
+                // Si la sesión caducó mientras estábamos fuera, limpiamos todo
+                set({ session: null, perfil: null, rol: null });
             }
         } catch (error) {
             console.error("Error al verificar sesión:", error);
