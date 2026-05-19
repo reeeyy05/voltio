@@ -33,7 +33,6 @@
     },
     "login": {
         "title": "Iniciar sesión",
-        "subtitle": "Introduce tus credenciales para acceder al panel operativo.",
         "email": "Correo electrónico",
         "email_placeholder": "ejemplo@voltio.com",
         "password": "Contraseña",
@@ -80,7 +79,7 @@
         "assigned_works": "Obras Asignadas"
     },
     "obras": {
-        "title": "Obras y Proyectos",
+        "title": "Obras",
         "subtitle": "Gestión colaborativa de proyectos de la empresa.",
         "new_work": "Nueva Obra",
         "create_title": "Dar de alta un nuevo proyecto",
@@ -153,7 +152,7 @@
         "submit_edit": "Guardar Cambios"
     },
     "inventario": {
-        "title": "Inventario y Materiales",
+        "title": "Inventario",
         "subtitle": "Control de stock y gestión de recursos.",
         "add_material": "Añadir Material",
         "create_title": "Registrar nuevo material",

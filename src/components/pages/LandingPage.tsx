@@ -41,14 +41,13 @@ function FadeInSection({ children }: { children: ReactNode }) {
 export default function LandingPage() {
     const { t } = useTranslation();
 
-    // Extraemos también isLoading
-    const { perfil, rol, logout, isLoading } = useAuthStore();
+    // FIX: Sacamos isInitialized en lugar de isLoading
+    const { perfil, rol, logout, isInitialized } = useAuthStore();
     const nombreCompleto = perfil ? `${perfil.nombre} ${perfil.apellidos || ''}`.trim() : undefined;
 
     return (
         <div className="min-h-screen bg-background text-foreground flex flex-col">
 
-            {/* HEADER INTELIGENTE */}
             <Header
                 userName={nombreCompleto}
                 role={rol || undefined}
@@ -56,7 +55,7 @@ export default function LandingPage() {
                 onLogout={logout}
                 showLogo={true}
                 showSidebarTrigger={false}
-                isLoading={isLoading}
+                isLoading={!isInitialized} // FIX: Mostramos estado de carga hasta estar inicializados
             />
 
             <section className="relative flex flex-col items-center justify-center text-center px-4 sm:px-6 lg:px-8 overflow-hidden" style={{ minHeight: 'calc(100vh - 5rem)' }}>

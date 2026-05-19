@@ -27,9 +27,6 @@ export default function SignInPage() {
                         <h1 className="text-3xl font-extrabold text-stone-900 dark:text-stone-50 mb-3 tracking-tight">
                             {t('login.title')}
                         </h1>
-                        <p className="text-stone-600 dark:text-stone-400 font-medium">
-                            {t('login.subtitle')}
-                        </p>
                     </div>
 
                     {/* Tarjeta Contenedora del Formulario */}

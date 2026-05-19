@@ -16,6 +16,7 @@ interface InventarioState {
     error: string | null;
     fetchMateriales: () => Promise<void>;
     createMaterial: (material: Omit<Material, 'id' | 'creado_en'>) => Promise<void>;
+    createMaterialesBulk: (materiales: Omit<Material, 'id' | 'creado_en'>[]) => Promise<void>; // NUEVO
     updateCantidad: (id: string, variacion: number) => Promise<void>;
     deleteMaterial: (id: string) => Promise<void>;
 }
@@ -50,7 +51,22 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
             await get().fetchMateriales();
         } catch (error: any) {
             set({ error: error.message });
-            throw error; // Lanzamos el error para que Sonner lo capture
+            throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    // NUEVA FUNCIÓN: INSERCIÓN MASIVA
+    createMaterialesBulk: async (materiales) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { error } = await supabase.from('materiales').insert(materiales);
+            if (error) throw error;
+            await get().fetchMateriales();
+        } catch (error: any) {
+            console.error("Error en carga masiva:", error);
+            throw error;
         } finally {
             set({ isLoading: false });
         }
@@ -61,7 +77,6 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
             const material = get().materiales.find(m => m.id === id);
             if (!material) return;
 
-            // Aseguramos que el stock no baje de cero
             const nuevaCantidad = Math.max(0, material.cantidad + variacion);
 
             const { error } = await supabase
@@ -75,7 +90,7 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
             set({ materiales: materiales.map(m => m.id === id ? { ...m, cantidad: nuevaCantidad } : m) });
         } catch (error: any) {
             console.error("Error al actualizar cantidad:", error);
-            throw error; // Lanzamos el error para que Sonner lo capture
+            throw error;
         }
     },
 
@@ -88,7 +103,7 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
             set({ materiales: materiales.filter(m => m.id !== id) });
         } catch (error: any) {
             console.error("Error al eliminar material:", error);
-            throw error; // Lanzamos el error para que Sonner lo capture
+            throw error;
         }
     }
 }));

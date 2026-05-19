@@ -15,13 +15,12 @@ import {
     Users,
     UserCircle,
     LogOut,
-    Settings,
     ChevronUp,
     Package
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "@/stores/authStore";
-import { useTranslation } from "react-i18next"; // Importamos el hook de traducción
+import { useTranslation } from "react-i18next";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
     DropdownMenu,
@@ -34,7 +33,7 @@ import {
 
 export function MainSidebar() {
     const { rol, perfil, logout } = useAuthStore();
-    const { t } = useTranslation(); // Inicializamos la traducción
+    const { t } = useTranslation();
     const location = useLocation();
     const navigate = useNavigate();
 
@@ -117,7 +116,6 @@ export function MainSidebar() {
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                                         <span className="truncate font-semibold">{perfil?.nombre} {perfil?.apellidos}</span>
-                                        {/* Traducción dinámica del rol */}
                                         <span className="truncate text-[10px] text-stone-500 uppercase font-bold tracking-wider">
                                             {rol ? t(`roles.${rol}`) : ''}
                                         </span>
@@ -146,10 +144,6 @@ export function MainSidebar() {
                                         <UserCircle className="mr-2 h-4 w-4" />
                                         {t('sidebar.profile')}
                                     </Link>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem className="cursor-pointer">
-                                    <Settings className="mr-2 h-4 w-4" />
-                                    {t('sidebar.settings')}
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={handleLogout} className="text-red-600 dark:text-red-400 cursor-pointer focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/50">

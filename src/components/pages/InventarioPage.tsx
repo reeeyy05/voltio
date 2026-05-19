@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { type ColumnDef } from '@tanstack/react-table';
 import { DataTable } from '@/components/ui/data-table';
@@ -10,16 +10,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Package, Plus, Loader2, MoreHorizontal, Minus, Trash2, ArrowUpDown } from 'lucide-react';
+import { Package, Plus, Loader2, MoreHorizontal, Minus, Trash2, ArrowUpDown, Upload } from 'lucide-react';
 import { useInventarioStore, type Material } from '@/stores/inventarioStore';
 
 export default function InventarioPage() {
     const { t } = useTranslation();
-    const { materiales, isLoading, fetchMateriales, createMaterial, updateCantidad, deleteMaterial } = useInventarioStore();
+    const { materiales, isLoading, fetchMateriales, createMaterial, createMaterialesBulk, updateCantidad, deleteMaterial } = useInventarioStore();
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const [nuevoMaterial, setNewMaterial] = useState({ nombre: '', descripcion: '', cantidad: '', unidad: '' });
+
+    // Referencia para el input de archivo oculto
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         fetchMateriales();
@@ -50,6 +53,49 @@ export default function InventarioPage() {
         }
     };
 
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const text = e.target?.result as string;
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+
+                if (lines.length === 0) throw new Error("Archivo vacío");
+
+                const isHeader = lines[0].toLowerCase().includes('nombre');
+                const startIndex = isHeader ? 1 : 0;
+
+                const nuevosMateriales = [];
+                for (let i = startIndex; i < lines.length; i++) {
+                    const cols = lines[i].split(',');
+
+                    if (cols.length >= 4) {
+                        nuevosMateriales.push({
+                            nombre: cols[0].trim(),
+                            descripcion: cols[1].trim() || null,
+                            cantidad: parseFloat(cols[2].trim()) || 0,
+                            unidad: cols[3].trim()
+                        });
+                    }
+                }
+
+                if (nuevosMateriales.length > 0) {
+                    await createMaterialesBulk(nuevosMateriales);
+                    toast.success(`${nuevosMateriales.length} materiales cargados correctamente`);
+                } else {
+                    toast.warning("No se encontraron datos válidos en el archivo.");
+                }
+            } catch (error) {
+                toast.error("Error al procesar el archivo CSV.");
+            }
+            if (fileInputRef.current) fileInputRef.current.value = '';
+        };
+        reader.readAsText(file);
+    };
+
     const handleModifyStock = async (id: string, variacion: number) => {
         try {
             await updateCantidad(id, variacion);
@@ -68,7 +114,7 @@ export default function InventarioPage() {
         }
     };
 
-    // DEFINICIÓN DE LAS COLUMNAS DE LA TABLA
+    // FIX: Ahora las columnas están unificadas sin restricciones de rol
     const columns = useMemo<ColumnDef<Material>[]>(() => [
         {
             accessorKey: "nombre",
@@ -165,42 +211,56 @@ export default function InventarioPage() {
                     </p>
                 </div>
 
-                <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="flex items-center gap-2">
-                            <Plus className="h-4 w-4" /> {t('inventario.add_material')}
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>{t('inventario.create_title')}</DialogTitle>
-                            <DialogDescription>{t('inventario.create_desc')}</DialogDescription>
-                        </DialogHeader>
-                        <form onSubmit={handleCreate} className="space-y-4 mt-4">
-                            <div className="space-y-2">
-                                <Label>{t('inventario.form_name')}</Label>
-                                <Input placeholder={t('inventario.form_name_ph')} value={nuevoMaterial.nombre} onChange={e => setNewMaterial({ ...nuevoMaterial, nombre: e.target.value })} />
-                            </div>
-                            <div className="space-y-2">
-                                <Label>{t('inventario.form_desc')}</Label>
-                                <Textarea value={nuevoMaterial.descripcion} onChange={e => setNewMaterial({ ...nuevoMaterial, descripcion: e.target.value })} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label>{t('inventario.form_qty')}</Label>
-                                    <Input type="number" min="0" value={nuevoMaterial.cantidad} onChange={e => setNewMaterial({ ...nuevoMaterial, cantidad: e.target.value })} />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label>{t('inventario.form_unit')}</Label>
-                                    <Input placeholder={t('inventario.form_unit_ph')} value={nuevoMaterial.unidad} onChange={e => setNewMaterial({ ...nuevoMaterial, unidad: e.target.value })} />
-                                </div>
-                            </div>
-                            <Button type="submit" className="w-full" disabled={isCreating}>
-                                {isCreating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('inventario.submit_create')}
+                <div className="flex items-center gap-2">
+                    <input
+                        type="file"
+                        accept=".csv"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleFileUpload}
+                    />
+
+                    <Button variant="outline" onClick={() => fileInputRef.current?.click()} className="flex items-center gap-2">
+                        <Upload className="h-4 w-4" /> Carga Masiva
+                    </Button>
+
+                    <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
+                        <DialogTrigger asChild>
+                            <Button className="flex items-center gap-2">
+                                <Plus className="h-4 w-4" /> {t('inventario.add_material')}
                             </Button>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                        </DialogTrigger>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>{t('inventario.create_title')}</DialogTitle>
+                                <DialogDescription>{t('inventario.create_desc')}</DialogDescription>
+                            </DialogHeader>
+                            <form onSubmit={handleCreate} className="space-y-4 mt-4">
+                                <div className="space-y-2">
+                                    <Label>{t('inventario.form_name')}</Label>
+                                    <Input placeholder={t('inventario.form_name_ph')} value={nuevoMaterial.nombre} onChange={e => setNewMaterial({ ...nuevoMaterial, nombre: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label>{t('inventario.form_desc')}</Label>
+                                    <Textarea value={nuevoMaterial.descripcion} onChange={e => setNewMaterial({ ...nuevoMaterial, descripcion: e.target.value })} />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>{t('inventario.form_qty')}</Label>
+                                        <Input type="number" min="0" value={nuevoMaterial.cantidad} onChange={e => setNewMaterial({ ...nuevoMaterial, cantidad: e.target.value })} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>{t('inventario.form_unit')}</Label>
+                                        <Input placeholder={t('inventario.form_unit_ph')} value={nuevoMaterial.unidad} onChange={e => setNewMaterial({ ...nuevoMaterial, unidad: e.target.value })} />
+                                    </div>
+                                </div>
+                                <Button type="submit" className="w-full" disabled={isCreating}>
+                                    {isCreating ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('inventario.submit_create')}
+                                </Button>
+                            </form>
+                        </DialogContent>
+                    </Dialog>
+                </div>
             </div>
 
             {isLoading && materiales.length === 0 ? (
