@@ -8,7 +8,8 @@ interface AdminState {
     error: string | null;
     fetchUsuarios: () => Promise<void>;
     updateRolUsuario: (id: string, nuevoRol: RolUsuario) => Promise<void>;
-    updateDetallesUsuario: (id: string, nombre: string, apellidos: string) => Promise<void>;
+    // FIX: Añadimos el email a la firma de la función
+    updateDetallesUsuario: (id: string, nombre: string, apellidos: string, email: string) => Promise<void>;
     deleteUsuario: (id: string) => Promise<void>;
 }
 
@@ -47,14 +48,14 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         }
     },
 
-    // NUEVO: Función Update para el CRUD
-    updateDetallesUsuario: async (id: string, nombre: string, apellidos: string) => {
+    // FIX: Ahora enviamos el email a la tabla 'perfiles'
+    updateDetallesUsuario: async (id: string, nombre: string, apellidos: string, email: string) => {
         try {
-            const { error } = await supabase.from('perfiles').update({ nombre, apellidos }).eq('id', id);
+            const { error } = await supabase.from('perfiles').update({ nombre, apellidos, email }).eq('id', id);
             if (error) throw error;
 
             const { usuarios } = get();
-            set({ usuarios: usuarios.map(u => u.id === id ? { ...u, nombre, apellidos } : u) });
+            set({ usuarios: usuarios.map(u => u.id === id ? { ...u, nombre, apellidos, email } : u) });
         } catch (error: any) {
             console.error(error);
             throw error;

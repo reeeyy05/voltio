@@ -29,6 +29,7 @@ export default function UsersManagementPage() {
     const [userToEdit, setUserToEdit] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editSurname, setEditSurname] = useState('');
+    const [editEmail, setEditEmail] = useState(''); // FIX: Estado para el email
     const [isEditing, setIsEditing] = useState(false);
 
     const [newEmail, setNewEmail] = useState('');
@@ -72,22 +73,25 @@ export default function UsersManagementPage() {
         }
     };
 
+    // FIX: Cargamos el email al abrir el modal de edición
     const handleOpenEdit = (user: Perfil) => {
         setUserToEdit(user.id);
         setEditName(user.nombre);
         setEditSurname(user.apellidos || '');
+        setEditEmail(user.email || ''); 
         setIsEditOpen(true);
     };
 
+    // FIX: Añadida la validación y el envío del email a updateDetallesUsuario
     const handleEditUser = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!userToEdit || !editName.trim()) {
-            toast.warning("El nombre es obligatorio");
+        if (!userToEdit || !editName.trim() || !editEmail.trim()) {
+            toast.warning("El nombre y el correo son obligatorios");
             return;
         }
         setIsEditing(true);
         try {
-            await updateDetallesUsuario(userToEdit, editName, editSurname);
+            await updateDetallesUsuario(userToEdit, editName, editSurname, editEmail);
             setIsEditOpen(false);
             toast.success("Información actualizada");
         } catch (error: any) {
@@ -167,7 +171,7 @@ export default function UsersManagementPage() {
         },
         {
             accessorKey: "rol",
-            header: t('users.col_role'), // AQUÍ NO PONEMOS ORDENACIÓN
+            header: t('users.col_role'),
             cell: ({ row }) => {
                 return row.original.rol === 'admin' ? (
                     <Badge variant="default" className="bg-amber-500 hover:bg-amber-600 flex w-fit items-center gap-1">
@@ -296,6 +300,11 @@ export default function UsersManagementPage() {
                         <div className="space-y-2">
                             <Label>{t('users.form_surname')}</Label>
                             <Input value={editSurname} onChange={e => setEditSurname(e.target.value)} />
+                        </div>
+                        {/* FIX: Formulario actualizado con el campo de email */}
+                        <div className="space-y-2">
+                            <Label>{t('users.form_email')}</Label>
+                            <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} />
                         </div>
                         <Button type="submit" className="w-full" disabled={isEditing}>
                             {isEditing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('users.submit_edit')}

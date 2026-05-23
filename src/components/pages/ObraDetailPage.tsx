@@ -28,7 +28,6 @@ export default function ObraDetailPage() {
     const [isLoadingObra, setIsLoadingObra] = useState(true);
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
-    // FIX: Cambiamos 'titulo' y 'asignado_a' por 'descripcion' y 'empleado_id' para coincidir con la Base de Datos
     const [nuevaTarea, setNuevaTarea] = useState({ descripcion: '', empleado_id: '' });
 
     useEffect(() => {
@@ -48,7 +47,6 @@ export default function ObraDetailPage() {
     const handleCreateTarea = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validación asegurando que tenemos la descripción y el empleado
         if (!id || !nuevaTarea.descripcion.trim() || !nuevaTarea.empleado_id) return;
 
         await createTarea({
@@ -112,7 +110,6 @@ export default function ObraDetailPage() {
                         <form onSubmit={handleCreateTarea} className="space-y-4 mt-4">
                             <div className="space-y-2">
                                 <Label>{t('obra_detail.task_title')}</Label>
-                                {/* Usamos el input principal como Descripción para la BD */}
                                 <Input value={nuevaTarea.descripcion} onChange={e => setNuevaTarea({ ...nuevaTarea, descripcion: e.target.value })} placeholder={t('obra_detail.task_title_ph')} />
                             </div>
 
@@ -121,7 +118,15 @@ export default function ObraDetailPage() {
                                 <Select onValueChange={(v) => setNuevaTarea({ ...nuevaTarea, empleado_id: v })}>
                                     <SelectTrigger><SelectValue placeholder={t('obra_detail.task_assignee_ph')} /></SelectTrigger>
                                     <SelectContent>
-                                        {usuarios.map(u => <SelectItem key={u.id} value={u.id}>{u.nombre} {u.apellidos}</SelectItem>)}
+                                        {/* FIX: Filtramos la lista para mostrar únicamente perfiles con rol 'empleado' */}
+                                        {usuarios
+                                            .filter(u => u.rol === 'empleado')
+                                            .map(u => (
+                                                <SelectItem key={u.id} value={u.id}>
+                                                    {u.nombre} {u.apellidos}
+                                                </SelectItem>
+                                            ))
+                                        }
                                     </SelectContent>
                                 </Select>
                             </div>

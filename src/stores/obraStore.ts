@@ -1,7 +1,8 @@
 import { create } from 'zustand';
 import { supabase } from '@/Supabase/Client';
 
-export type EstadoObra = 'En curso' | 'Finalizada';
+// FIX: Actualizamos el tipo para que coincida con la base de datos
+export type EstadoObra = 'Pendiente' | 'Finalizada';
 
 export interface Obra {
     id: string;
@@ -46,20 +47,19 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
     createObra: async (nombre: string, descripcion?: string) => {
         set({ isLoading: true, error: null });
         try {
-            // FIX: Convertimos strings vacíos a null para evitar bloqueos en BD
             const { error } = await supabase
                 .from('obras')
                 .insert([{ 
                     nombre, 
                     descripcion: descripcion?.trim() ? descripcion : null, 
-                    estado: 'En curso' 
+                    estado: 'Pendiente' // FIX: Las obras nacen como Pendientes
                 }]);
 
             if (error) throw error;
             await get().fetchObras();
         } catch (error: any) {
             set({ error: error.message });
-            throw error; // Lanzamos el error para que la UI lo capture
+            throw error;
         } finally {
             set({ isLoading: false });
         }

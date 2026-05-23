@@ -33,7 +33,6 @@
     },
     "login": {
         "title": "Log in",
-        "subtitle": "Enter your credentials to access the operational dashboard.",
         "email": "Email address",
         "email_placeholder": "example@voltio.com",
         "password": "Password",
@@ -80,7 +79,7 @@
         "assigned_works": "Assigned Works"
     },
     "obras": {
-        "title": "Works & Projects",
+        "title": "Works",
         "subtitle": "Collaborative project management for the company.",
         "new_work": "New Work",
         "create_title": "Register a new project",
@@ -153,7 +152,7 @@
         "submit_edit": "Save Changes"
     },
     "inventario": {
-        "title": "Inventory & Materials",
+        "title": "Inventory",
         "subtitle": "Stock control and resource management.",
         "add_material": "Add Material",
         "create_title": "Register new material",
