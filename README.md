@@ -27,11 +27,11 @@ Voltio combina una arquitectura moderna y modular:
 
 ## 🚀 Despliegue
 
-[![Despliegue en Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://voltio.vercel.app/)
+[![Despliegue en Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://voltio-rho.vercel.app/)
 
-Accede a la versión en producción: https://voltio.vercel.app/
+Accede a la versión en producción: https://voltio-rho.vercel.app/
 
-![Previsualización de la app](public/logo.png)
+![Previsualización de la app](public/preview.png)
 
 ---
 
@@ -40,7 +40,7 @@ Accede a la versión en producción: https://voltio.vercel.app/
 ```bash
 Voltio/
 │
-├── public/               # Recursos estáticos (logo.png)
+├── public/               # Recursos estáticos (logo.png, preview.png)
 │
 ├── docs/                 # Documentación del proyecto (manuales y diagramas)
 │   ├── Manual_tecnico.pdf
@@ -61,6 +61,7 @@ Voltio/
 ├── package.json
 ├── tailwind.config.js
 ├── eslint.config.js
+├── vercel.json           # Configuración de despliegue para Vercel
 └── README.md
 ```
 
