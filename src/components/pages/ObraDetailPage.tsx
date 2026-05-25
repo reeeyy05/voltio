@@ -81,8 +81,8 @@ export default function ObraDetailPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{obra.nombre}</h1>
-                            <Badge variant={obra.estado === 'En curso' ? 'secondary' : 'default'}>
-                                {obra.estado === 'En curso' ? t('obras.status_in_progress') : t('obras.status_completed')}
+                            <Badge variant={obra.estado === 'Pendiente' ? 'secondary' : 'default'}>
+                                {obra.estado === 'Pendiente' ? 'Pendiente' : t('obras.status_completed')}
                             </Badge>
                         </div>
                         {obra.descripcion ? (

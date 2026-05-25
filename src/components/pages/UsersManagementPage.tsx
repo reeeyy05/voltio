@@ -149,7 +149,7 @@ export default function UsersManagementPage() {
                     </div>
                 )
             },
-            filterFn: (row, id, value) => {
+            filterFn: (row, _id, value) => {
                 const name = row.original.nombre?.toLowerCase() || '';
                 const surname = row.original.apellidos?.toLowerCase() || '';
                 const email = row.original.email?.toLowerCase() || '';

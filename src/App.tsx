@@ -21,7 +21,7 @@ export default function App() {
   useEffect(() => {
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, _session) => {
       checkSession();
     });
 

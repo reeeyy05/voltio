@@ -8,8 +8,7 @@ import { useObrasStore } from "@/stores/obraStore";
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, HardHat, CheckCircle2, TrendingUp, Clock, Zap, ArrowRight, Loader2, ClipboardList } from "lucide-react";
-// IMPORTAMOS RECHARTS
+import { Users, HardHat, CheckCircle2, TrendingUp, Clock, ArrowRight, Loader2, ClipboardList } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function DashboardPage() {

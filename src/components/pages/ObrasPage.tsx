@@ -49,8 +49,8 @@ export default function ObrasPage() {
         }
     };
 
-    const handleUpdateEstado = async (id: string, estadoActual: string) => {
-        const nuevoEstado = estadoActual === 'En curso' ? 'Finalizada' : 'En curso';
+    const handleUpdateEstado = async (id: string, estadoActual: 'Pendiente' | 'Finalizada') => {
+        const nuevoEstado = estadoActual === 'Pendiente' ? 'Finalizada' : 'Pendiente';
         try {
             await updateEstadoObra(id, nuevoEstado);
             toast.success(`Estado actualizado a ${nuevoEstado}`);
@@ -152,8 +152,8 @@ export default function ObrasPage() {
                                         <DropdownMenuLabel>{t('obras.management')}</DropdownMenuLabel>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => handleUpdateEstado(obra.id, obra.estado)}>
-                                            {obra.estado === 'En curso' ? <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> : <Clock className="mr-2 h-4 w-4 text-amber-500" />}
-                                            {obra.estado === 'En curso' ? t('obras.finish') : t('obras.reopen')}
+                                            {obra.estado === 'Pendiente' ? <CheckCircle2 className="mr-2 h-4 w-4 text-green-500" /> : <Clock className="mr-2 h-4 w-4 text-amber-500" />}
+                                            {obra.estado === 'Pendiente' ? t('obras.finish') : t('obras.reopen')}
                                         </DropdownMenuItem>
                                         <DropdownMenuSeparator />
                                         <DropdownMenuItem onClick={() => handleDelete(obra.id)} className="text-red-600">
@@ -166,8 +166,8 @@ export default function ObrasPage() {
                                 {obra.descripcion && (
                                     <p className="text-xs text-stone-500 mb-4 line-clamp-2 italic">{obra.descripcion}</p>
                                 )}
-                                <Badge variant={obra.estado === 'En curso' ? 'secondary' : 'default'} className={obra.estado === 'En curso' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}>
-                                    {obra.estado === 'En curso' ? t('obras.status_in_progress') : t('obras.status_completed')}
+                                <Badge variant={obra.estado === 'Pendiente' ? 'secondary' : 'default'} className={obra.estado === 'Pendiente' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}>
+                                    {obra.estado === 'Pendiente' ? 'Pendiente' : t('obras.status_completed')}
                                 </Badge>
                             </CardContent>
                             <CardFooter className="pt-4 border-t border-stone-100 dark:border-stone-800">
