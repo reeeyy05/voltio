@@ -1,42 +1,173 @@
-# ⚡ Voltio
+# ⚡ Voltio — Gestión operativa para el sector eléctrico
 
-**Voltio** es una solución digital integral diseñada específicamente para optimizar la gestión operativa en el sector de la electricidad. Esta aplicación web técnica centraliza el control de las obras activas, permitiendo a los administradores y jefes de obra mantener un registro preciso y en tiempo real de cada proyecto.
+<p align="center">
+  <img src="https://img.shields.io/badge/Frontend-React-blue?logo=react" alt="React Badge">
+  <img src="https://img.shields.io/badge/Estado-Zustand-orange?logo=react" alt="Zustand Badge">
+  <img src="https://img.shields.io/badge/Backend-Supabase-green?logo=supabase" alt="Supabase Badge">
+  <img src="https://img.shields.io/badge/Estilos-TailwindCSS-38bdf8?logo=tailwindcss" alt="Tailwind Badge">
+  <img src="https://img.shields.io/badge/Licencia-MIT-yellow" alt="License Badge">
+</p>
 
----
-
-## 🚀 Objetivos del Proyecto
-El objetivo principal de **Voltio** es eliminar la dispersión de información y el uso de herramientas no especializadas. Ofrece un entorno unificado donde la gestión de recursos y el progreso de la obra convergen en una sola interfaz técnica y eficiente.
-
-## ✨ Funcionalidades Clave
-* **🏗️ Gestión de Obras y Tareas:** El núcleo de la aplicación permite crear, visualizar, actualizar y finalizar proyectos eléctricos, así como asignar tareas específicas a los operarios (con estados "Pendiente" o "Finalizada").
-* **📦 Control de Inventario y Materiales:** Registro detallado del stock general de la empresa, permitiendo modificaciones manuales instantáneas o **carga masiva de materiales mediante archivos CSV**.
-* **👥 Gestión de Usuarios y Accesos:** Panel de administración avanzado para modificar datos del personal, promover o degradar roles y visualizar la carga de trabajo global del equipo mediante gráficos interactivos.
-
----
-
-## 🛠️ Stack Tecnológico
-Para garantizar escalabilidad, velocidad y una experiencia de usuario fluida, el proyecto utiliza:
-
-* **Frontend:** [React.js](https://reactjs.org/) + Vite
-* **Gestión de Estado:** Zustand (Arquitectura modular por *stores*)
-* **Diseño y Estilos:** TailwindCSS + Shadcn UI
-* **Backend & Database:** [Supabase](https://supabase.com/) (PostgreSQL, Auth & Storage)
-* **Despliegue**: Vercel
+> 🏗️ Voltio es una aplicación web final del ciclo Desarrollo de Aplicaciones Web.
+> Permite a las empresas del sector eléctrico centralizar el control de obras activas, gestionar a los operarios y llevar un registro del inventario en tiempo real.
 
 ---
 
-## 👤 Roles de Usuario
+## 🌍 Descripción general
 
-El sistema se ha optimizado para manejar dos perfiles fundamentales, garantizando la seguridad mediante políticas de acceso (RLS):
+Voltio combina una arquitectura moderna y modular:
+- 🔹 **Frontend:** React + Vite + TailwindCSS + Shadcn UI
+- 🔹 **Base de datos y autenticación:** Supabase (PostgreSQL + Auth + Storage)
+- 🔹 **Gestión de estado global:** Zustand
+- 🔹 **Gestión de usuarios:** Login, roles (`admin`, `empleado`) y perfiles seguros mediante políticas RLS
+- 🔹 **Diseño:** Limpio, oscuro, responsive y soporte multi-idioma (i18n)
+- 🔹 **Objetivo:** Eliminar el uso de papel y optimizar la operativa de los equipos de campo
 
-| Rol | Descripción | Funcionalidades |
-| :--- | :--- | :--- |
-| **⚡ Administrador** | Gestiona toda la aplicación: configura, añade o elimina funcionalidades, usuarios y datos. | <ul><li>Acceso CRUD total a toda la aplicación</li><li>Crear obras y asignar tareas</li><li>Gestión de roles y datos de empleados</li><li>Visualizar gráficos del *dashboard* global</li><li>Realizar cargas masivas (CSV) en inventario</li></ul> |
-| **👷 Empleado** | Realiza tareas asignadas y gestiona materiales operativos; solo accede a sus propios proyectos. | <ul><li>Consultar tareas y obras asignadas</li><li>Actualizar estado de tareas propias a "Finalizada"</li><li>Visualizar y modificar stock en el inventario general</li><li>Ver progreso personal en el *dashboard*</li></ul> |
+---
+
+## 🚀 Despliegue
+
+[![Despliegue en Vercel](https://img.shields.io/badge/Deploy-Vercel-black?logo=vercel)](https://voltio.vercel.app/)
+
+Accede a la versión en producción: https://voltio.vercel.app/
+
+![Previsualización de la app](public/logo.png)
+
+---
+
+## 🧱 Estructura del proyecto
+
+```bash
+Voltio/
+│
+├── public/               # Recursos estáticos (logo.png)
+│
+├── docs/                 # Documentación del proyecto (manuales y diagramas)
+│   ├── Manual_tecnico.pdf
+│   └── diagrama.png
+│
+├── src/
+│   ├── components/       # Componentes UI reutilizables (Shadcn, modales, formularios)
+│   ├── layouts/          # Estructuras maestras (MainLayout, MainSidebar)
+│   ├── locales/          # Archivos de internacionalización (es.json, en.json)
+│   ├── pages/            # Dashboard, Obras, Inventario, Login, Registro, etc.
+│   ├── stores/           # Estado global modular con Zustand
+│   ├── Supabase/         # Configuración del cliente backend
+│   ├── App.tsx           # Enrutamiento principal y protección de rutas
+│   ├── main.tsx          # Entrada de React
+│   └── index.css         # Estilos globales Tailwind
+│
+├── .env.local            # Variables locales (NO se sube)
+├── package.json
+├── tailwind.config.js
+├── eslint.config.js
+└── README.md
+```
+
+---
+
+## ⚙️ Instalación y ejecución local
+
+### 1️⃣ Clonar el repositorio
+
+```bash
+git clone [https://github.com/reeeyy05/Voltio.git](https://github.com/reeeyy05/Voltio.git)
+cd Voltio
+```
+
+### 2️⃣ Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3️⃣ Ejecutar el entorno de desarrollo
+
+*(Requiere configurar el archivo `.env.local` con las variables de Supabase)*
+
+```bash
+npm run dev
+```
+
+El proyecto se abrirá en: http://localhost:5173
+
+---
+
+## 🗄️ Base de datos (Supabase)
+
+Tablas principales:
+
+| Tabla | Descripción |
+| :--- | :--- |
+| **perfiles** | Datos extendidos del usuario (nombre, avatar, rol), vinculada a `auth.users` |
+| **obras** | Proyectos activos de la empresa, con estados ("Pendiente", "Finalizada") |
+| **tareas** | Asignaciones específicas dentro de una obra vinculadas a un operario |
+| **materiales** | Catálogo general de stock para el control del almacén |
+
+**Políticas RLS:**
+- Cada operario solo accede y modifica la información de sus propios proyectos asignados.
+- Los administradores tienen permisos globales de gestión (CRUD completo).
+
+---
+
+## 👤 Roles de usuario
+
+| Rol | Permisos |
+| :--- | :--- |
+| **Administrador** | Acceso total. Crea y supervisa obras, visualiza gráficos globales, gestiona usuarios/roles y realiza carga masiva de stock CSV. |
+| **Empleado** | Usuario de campo. Consulta sus obras asignadas, marca tareas como finalizadas y puede visualizar/modificar el inventario general. |
+
+---
+
+## 🧠 Tecnologías principales
+
+| Tecnología | Uso |
+| :--- | :--- |
+| ⚛️ **React + Vite** | Frontend moderno, rápido y tipado con TypeScript |
+| 🎨 **TailwindCSS** | Estilos consistentes, adaptables y modo oscuro nativo |
+| 🧰 **Supabase** | Backend con PostgreSQL, Auth y Storage |
+| 🐻 **Zustand** | Gestión del estado global estructurada y ligera |
+| 📊 **Recharts** | Generación de gráficos analíticos interactivos |
+
+---
+
+## 💻 Comandos útiles
+
+| Acción | Comando |
+| :--- | :--- |
+| Instalar dependencias | `npm install` |
+| Ejecutar en desarrollo | `npm run dev` |
+| Build de producción | `npm run build` |
+| Previsualizar build | `npm run preview` |
+
+---
+
+## 🧩 Características implementadas
+
+- ✅ Vistas: inicio, login, registro, dashboard, obras, tareas, inventario, gestión de usuarios
+- ✅ Navegación con React Router y rutas protegidas
+- ✅ Componentes reutilizables (Layouts, modales, tablas de Shadcn UI)
+- ✅ Estilo responsive con modo oscuro e internacionalización (ES/EN)
+- ✅ Supabase con RLS y roles (`admin`, `empleado`)
+- ✅ Panel interactivo con gráficos de rendimiento (Recharts)
+- ✅ Carga masiva de inventario mediante archivos CSV
+
+---
+
+| Vista | Descripción |
+| :--- | :--- |
+| 🏠 **Inicio** | Presentación del proyecto y características (Landing Page) |
+| 🔐 **Login / Registro** | Acceso y autenticación de empleados y administradores |
+| 📊 **Panel (Dashboard)** | Seguimiento de obras y gráficos de carga de trabajo |
+| 🏗️ **Obras** | Gestión completa de proyectos (CRUD) y estados |
+| 📝 **Detalle de Obra** | Asignación y gestión de tareas a operarios |
+| 📦 **Inventario** | Control de stock, búsqueda y carga masiva por CSV |
+| ⚙️ **Administración** | Gestión de usuarios, roles y actualización de datos |
 
 ---
 
 ## 📅 Cronograma de Desarrollo
+
 Planificación estratégica basada en hitos clave:
 
 | Fecha | Hito de Desarrollo |
@@ -64,5 +195,10 @@ Planificación estratégica basada en hitos clave:
 | **23-May** | Redacción Final del **Manual Técnico** y revisión de código |
 
 ---
-Participante: Alejandro Rey Tostado  
-Centro: IES Albarregas, Mérida
+
+## 👩‍💻 Autoría
+
+- Alejandro Rey Tostado
+- CFGS en Desarrollo de Aplicaciones Web (DAW)
+- 📍 IES Albarregas – Mérida (España)
+- 📘 Proyecto TFG: Voltio – Gestión operativa para el sector eléctrico (2026)
