@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/Supabase/Client';
 
-// FIX: Actualizamos el tipo para que coincida con la base de datos
 export type EstadoObra = 'Pendiente' | 'Finalizada';
 
 export interface Obra {
@@ -18,8 +17,10 @@ interface ObrasState {
     error: string | null;
     fetchObras: () => Promise<void>;
     createObra: (nombre: string, descripcion?: string) => Promise<void>;
+    createObrasBulk: (obras: { nombre: string; descripcion: string | null; estado: EstadoObra }[]) => Promise<void>; // NUEVO
     updateEstadoObra: (id: string, nuevoEstado: EstadoObra) => Promise<void>;
     deleteObra: (id: string) => Promise<void>;
+    deleteObrasBulk: (ids: string[]) => Promise<void>;
 }
 
 export const useObrasStore = create<ObrasState>((set, get) => ({
@@ -49,16 +50,31 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
         try {
             const { error } = await supabase
                 .from('obras')
-                .insert([{ 
-                    nombre, 
-                    descripcion: descripcion?.trim() ? descripcion : null, 
-                    estado: 'Pendiente' // FIX: Las obras nacen como Pendientes
+                .insert([{
+                    nombre,
+                    descripcion: descripcion || null,
+                    estado: 'Pendiente'
                 }]);
 
             if (error) throw error;
             await get().fetchObras();
         } catch (error: any) {
             set({ error: error.message });
+            throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    // NUEVA FUNCIÓN PARA LA CARGA MASIVA DE OBRAS
+    createObrasBulk: async (obras) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { error } = await supabase.from('obras').insert(obras);
+            if (error) throw error;
+            await get().fetchObras();
+        } catch (error: any) {
+            console.error("Error en carga masiva de obras:", error);
             throw error;
         } finally {
             set({ isLoading: false });
@@ -95,6 +111,21 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
             if (error) throw error;
             const { obras } = get();
             set({ obras: obras.filter(o => o.id !== id) });
+        } catch (error: any) {
+            set({ error: error.message });
+            throw error;
+        } finally {
+            set({ isLoading: false });
+        }
+    },
+
+    deleteObrasBulk: async (ids: string[]) => {
+        set({ isLoading: true, error: null });
+        try {
+            const { error } = await supabase.from('obras').delete().in('id', ids);
+            if (error) throw error;
+            const { obras } = get();
+            set({ obras: obras.filter(o => !ids.includes(o.id)) });
         } catch (error: any) {
             set({ error: error.message });
             throw error;

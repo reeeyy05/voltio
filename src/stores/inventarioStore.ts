@@ -16,9 +16,10 @@ interface InventarioState {
     error: string | null;
     fetchMateriales: () => Promise<void>;
     createMaterial: (material: Omit<Material, 'id' | 'creado_en'>) => Promise<void>;
-    createMaterialesBulk: (materiales: Omit<Material, 'id' | 'creado_en'>[]) => Promise<void>; // NUEVO
+    createMaterialesBulk: (materiales: Omit<Material, 'id' | 'creado_en'>[]) => Promise<void>;
     updateCantidad: (id: string, variacion: number) => Promise<void>;
     deleteMaterial: (id: string) => Promise<void>;
+    deleteMaterialesBulk: (ids: string[]) => Promise<void>; // NUEVO
 }
 
 export const useInventarioStore = create<InventarioState>((set, get) => ({
@@ -57,7 +58,6 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
         }
     },
 
-    // NUEVA FUNCIÓN: INSERCIÓN MASIVA
     createMaterialesBulk: async (materiales) => {
         set({ isLoading: true, error: null });
         try {
@@ -103,6 +103,19 @@ export const useInventarioStore = create<InventarioState>((set, get) => ({
             set({ materiales: materiales.filter(m => m.id !== id) });
         } catch (error: any) {
             console.error("Error al eliminar material:", error);
+            throw error;
+        }
+    },
+
+    deleteMaterialesBulk: async (ids: string[]) => {
+        try {
+            const { error } = await supabase.from('materiales').delete().in('id', ids);
+            if (error) throw error;
+
+            const { materiales } = get();
+            set({ materiales: materiales.filter(m => !ids.includes(m.id)) });
+        } catch (error: any) {
+            console.error("Error al eliminar materiales masivamente:", error);
             throw error;
         }
     }

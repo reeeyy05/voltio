@@ -13,7 +13,7 @@ import DashboardPage from './components/pages/DashboardPage';
 import ObrasPage from './components/pages/ObrasPage';
 import ObraDetailPage from './components/pages/ObraDetailPage';
 import InventarioPage from './components/pages/InventarioPage';
-import { Toaster } from "@/components/ui/sonner"; // IMPORTAMOS EL TOASTER
+import { Toaster } from "@/components/ui/sonner";
 
 export default function App() {
   const { checkSession } = useAuthStore();
@@ -56,8 +56,14 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* AÑADIMOS EL TOASTER AQUÍ PARA TODA LA APP */}
-      <Toaster position="bottom-right" richColors />
+      <Toaster
+        position="bottom-right"
+        richColors
+        closeButton
+        expand={false}
+        duration={4000}
+        visibleToasts={3}
+      />
     </BrowserRouter>
   );
 }

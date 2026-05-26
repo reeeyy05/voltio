@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, AlertCircle } from 'lucide-react';
+import { Loader2, AlertCircle, ArrowLeft } from 'lucide-react';
 import { PasswordInput } from '../ui/PasswordInput';
 
 export function SignInForm() {
@@ -28,14 +28,12 @@ export function SignInForm() {
         <form onSubmit={handleSignIn} className="space-y-4 w-full max-w-sm">
             {error && (
                 <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 p-3 rounded-lg flex items-start gap-2 text-sm">
-                    <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 shrink-0" />
                     <span>{error}</span>
                 </div>
             )}
             <div className="space-y-2">
-                <Label htmlFor="email" className="text-stone-800 dark:text-stone-200">
-                    {t('login.email')}
-                </Label>
+                <Label htmlFor="email" className="text-stone-800 dark:text-stone-200">{t('login.email')}</Label>
                 <Input
                     id="email"
                     type="email"
@@ -73,6 +71,22 @@ export function SignInForm() {
                     t('login.submit')
                 )}
             </Button>
+
+            <div className="text-center mt-4 text-sm text-stone-600 dark:text-stone-400">
+                {t('auth.signup_already')}{' '}
+                <Link to="/registro" className="font-medium text-primary hover:underline">
+                    Regístrate aquí
+                </Link>
+            </div>
+
+            <div className="text-center mt-6 pt-4 border-t border-stone-150 dark:border-stone-800 flex flex-col items-center justify-center">
+                <Button variant="ghost" size="sm" asChild className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 gap-2 w-full">
+                    <Link to="/">
+                        <ArrowLeft className="h-4 w-4" />
+                        Volver a la página de inicio
+                    </Link>
+                </Button>
+            </div>
         </form>
     );
 }

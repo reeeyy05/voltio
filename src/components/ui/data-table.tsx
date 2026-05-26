@@ -21,19 +21,24 @@ import {
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Search } from "lucide-react"
+import { Search, Trash2 } from "lucide-react" // Añadido Trash2
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[]
     data: TData[]
+    searchPlaceholder?: string; // NUEVO: Para personalizar el buscador
+    onDeleteSelected?: (selectedIds: string[]) => void; // NUEVO: Para habilitar el borrado múltiple
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    searchPlaceholder,
+    onDeleteSelected
 }: DataTableProps<TData, TValue>) {
     const [globalFilter, setGlobalFilter] = useState("")
     const [sorting, setSorting] = useState<SortingState>([])
+    const [rowSelection, setRowSelection] = useState({}) // NUEVO: Estado para selección de filas
     const { t } = useTranslation()
 
     const table = useReactTable({
@@ -43,43 +48,67 @@ export function DataTable<TData, TValue>({
         getPaginationRowModel: getPaginationRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         getSortedRowModel: getSortedRowModel(),
-        state: {
-            globalFilter,
-            sorting,
-        },
-        onGlobalFilterChange: setGlobalFilter,
         onSortingChange: setSorting,
+        onGlobalFilterChange: setGlobalFilter,
+        onRowSelectionChange: setRowSelection, // Conectar estado
+        getRowId: (row: any) => row.id, // IMPORTANTE: Usar el ID real de la fila para borrar
+        state: {
+            sorting,
+            globalFilter,
+            rowSelection, // Estado inyectado
+        },
     })
 
+    const selectedIds = Object.keys(rowSelection); // Obtener IDs seleccionados
+
     return (
-        <div className="space-y-4">
-            {/* BUSCADOR GLOBAL */}
-            <div className="flex items-center relative">
-                <Search className="absolute left-3 h-4 w-4 text-stone-400" />
-                <Input
-                    placeholder={t('data_table.search')}
-                    value={globalFilter ?? ""}
-                    onChange={(event) => setGlobalFilter(String(event.target.value))}
-                    className="max-w-sm pl-9"
-                />
+        <div>
+            {/* BUSCADOR Y BOTÓN DE BORRADO MASIVO */}
+            <div className="flex flex-col sm:flex-row items-center justify-between py-4 gap-4">
+                <div className="relative w-full sm:max-w-sm">
+                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-stone-500" />
+                    <Input
+                        placeholder={searchPlaceholder || t('data_table.search')}
+                        value={globalFilter ?? ""}
+                        onChange={(event) => setGlobalFilter(String(event.target.value))}
+                        className="pl-8"
+                    />
+                </div>
+
+                {/* BOTÓN MÁGICO DE BORRADO (Solo sale si hay 1 o más seleccionados) */}
+                {onDeleteSelected && selectedIds.length > 0 && (
+                    <Button
+                        variant="destructive"
+                        onClick={() => {
+                            onDeleteSelected(selectedIds);
+                            setRowSelection({}); // Limpiamos selección tras pulsar
+                        }}
+                        className="w-full sm:w-auto flex items-center shadow-md animate-in fade-in zoom-in duration-200"
+                    >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Borrar {selectedIds.length} seleccionado(s)
+                    </Button>
+                )}
             </div>
 
-            {/* TABLA RENDERIZADA DINÁMICAMENTE */}
-            <div className="border border-stone-200 dark:border-stone-800 rounded-lg bg-card overflow-hidden shadow-sm">
+            {/* TABLA DE DATOS */}
+            <div className="rounded-md border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-950 overflow-hidden">
                 <Table>
                     <TableHeader className="bg-stone-50 dark:bg-stone-900/50">
                         {table.getHeaderGroups().map((headerGroup) => (
                             <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <TableHead key={header.id}>
-                                        {header.isPlaceholder
-                                            ? null
-                                            : flexRender(
-                                                header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                    </TableHead>
-                                ))}
+                                {headerGroup.headers.map((header) => {
+                                    return (
+                                        <TableHead key={header.id} className="text-stone-700 dark:text-stone-300 font-semibold">
+                                            {header.isPlaceholder
+                                                ? null
+                                                : flexRender(
+                                                    header.column.columnDef.header,
+                                                    header.getContext()
+                                                )}
+                                        </TableHead>
+                                    )
+                                })}
                             </TableRow>
                         ))}
                     </TableHeader>
@@ -89,9 +118,10 @@ export function DataTable<TData, TValue>({
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
+                                    className="hover:bg-stone-50/50 dark:hover:bg-stone-900/30 transition-colors"
                                 >
                                     {row.getVisibleCells().map((cell) => (
-                                        <TableCell key={cell.id}>
+                                        <TableCell key={cell.id} className="py-3">
                                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                                         </TableCell>
                                     ))}
@@ -109,9 +139,14 @@ export function DataTable<TData, TValue>({
             </div>
 
             {/* PAGINACIÓN */}
-            <div className="flex items-center justify-between px-2">
-                <div className="text-sm text-stone-500">
-                    {t('data_table.page')} {table.getState().pagination.pageIndex + 1} {t('data_table.of')} {table.getPageCount()}
+            <div className="flex items-center justify-between px-2 mt-4">
+                <div className="text-sm text-stone-500 flex items-center gap-4">
+                    <span>
+                        {t('data_table.page')} {table.getState().pagination.pageIndex + 1} {t('data_table.of')} {table.getPageCount()}
+                    </span>
+                    {selectedIds.length > 0 && (
+                        <span className="font-semibold text-primary">{selectedIds.length} fila(s) seleccionadas.</span>
+                    )}
                 </div>
                 <div className="flex items-center space-x-2">
                     <Button

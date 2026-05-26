@@ -10,8 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, CheckCircle2, Circle, HardHat, Loader2, Plus, Trash2, User, MapPin, Star } from 'lucide-react';
+import { toast } from 'sonner';
 import type { Obra } from '@/stores/obraStore';
 import { Card, CardContent } from '../ui/card';
 
@@ -29,6 +31,9 @@ export default function ObraDetailPage() {
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [nuevaTarea, setNuevaTarea] = useState({ descripcion: '', empleado_id: '' });
+
+    // Estado para el modal de borrado de tarea
+    const [tareaToDelete, setTareaToDelete] = useState<string | null>(null);
 
     useEffect(() => {
         if (!id) return;
@@ -58,6 +63,19 @@ export default function ObraDetailPage() {
 
         setIsCreateOpen(false);
         setNuevaTarea({ descripcion: '', empleado_id: '' });
+        toast.success("Tarea asignada correctamente");
+    };
+
+    const confirmDeleteTarea = async () => {
+        if (!tareaToDelete) return;
+        try {
+            await deleteTarea(tareaToDelete);
+            toast.success("Tarea eliminada con éxito");
+        } catch (error) {
+            toast.error("Error al eliminar la tarea");
+        } finally {
+            setTareaToDelete(null);
+        }
     };
 
     if (isLoadingObra) return <div className="p-20 flex justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
@@ -85,15 +103,6 @@ export default function ObraDetailPage() {
                                 {obra.estado === 'Pendiente' ? 'Pendiente' : t('obras.status_completed')}
                             </Badge>
                         </div>
-                        {obra.descripcion ? (
-                            <p className="text-stone-500 flex items-center gap-2 mt-1 text-sm">
-                                <MapPin className="h-4 w-4" /> {obra.descripcion}
-                            </p>
-                        ) : (
-                            <p className="text-stone-500 flex items-center gap-2 mt-1 text-sm">
-                                <HardHat className="h-4 w-4" /> {t('obra_detail.active_project')}
-                            </p>
-                        )}
                     </div>
                 </div>
 
@@ -118,7 +127,6 @@ export default function ObraDetailPage() {
                                 <Select onValueChange={(v) => setNuevaTarea({ ...nuevaTarea, empleado_id: v })}>
                                     <SelectTrigger><SelectValue placeholder={t('obra_detail.task_assignee_ph')} /></SelectTrigger>
                                     <SelectContent>
-                                        {/* FIX: Filtramos la lista para mostrar únicamente perfiles con rol 'empleado' */}
                                         {usuarios
                                             .filter(u => u.rol === 'empleado')
                                             .map(u => (
@@ -182,7 +190,8 @@ export default function ObraDetailPage() {
                                         </div>
                                     </div>
 
-                                    <Button variant="ghost" size="icon" onClick={() => deleteTarea(tarea.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                    {/* Botón de borrado ahora abre el modal */}
+                                    <Button variant="ghost" size="icon" onClick={() => setTareaToDelete(tarea.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
                                         <Trash2 className="h-4 w-4" />
                                     </Button>
                                 </CardContent>
@@ -191,6 +200,23 @@ export default function ObraDetailPage() {
                     })}
                 </div>
             )}
+
+            <AlertDialog open={!!tareaToDelete} onOpenChange={(open) => !open && setTareaToDelete(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar esta tarea?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Al borrar esta tarea, desaparecerá de la lista del operario y no podrá marcarse como finalizada. Esta acción no se puede deshacer.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDeleteTarea} className="bg-red-600 hover:bg-red-700 text-white">
+                            Borrar Tarea
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </div>
     );
 }

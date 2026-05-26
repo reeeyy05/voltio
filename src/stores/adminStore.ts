@@ -8,9 +8,9 @@ interface AdminState {
     error: string | null;
     fetchUsuarios: () => Promise<void>;
     updateRolUsuario: (id: string, nuevoRol: RolUsuario) => Promise<void>;
-    // FIX: Añadimos el email a la firma de la función
     updateDetallesUsuario: (id: string, nombre: string, apellidos: string, email: string) => Promise<void>;
     deleteUsuario: (id: string) => Promise<void>;
+    deleteUsuariosBulk: (ids: string[]) => Promise<void>; // NUEVO
 }
 
 export const useAdminStore = create<AdminState>((set, get) => ({
@@ -48,7 +48,6 @@ export const useAdminStore = create<AdminState>((set, get) => ({
         }
     },
 
-    // FIX: Ahora enviamos el email a la tabla 'perfiles'
     updateDetallesUsuario: async (id: string, nombre: string, apellidos: string, email: string) => {
         try {
             const { error } = await supabase.from('perfiles').update({ nombre, apellidos, email }).eq('id', id);
@@ -71,6 +70,19 @@ export const useAdminStore = create<AdminState>((set, get) => ({
             set({ usuarios: usuarios.filter(u => u.id !== id) });
         } catch (error: any) {
             console.error(error);
+            throw error;
+        }
+    },
+
+    deleteUsuariosBulk: async (ids: string[]) => {
+        try {
+            const { error } = await supabase.from('perfiles').delete().in('id', ids);
+            if (error) throw error;
+
+            const { usuarios } = get();
+            set({ usuarios: usuarios.filter(u => !ids.includes(u.id)) });
+        } catch (error: any) {
+            console.error("Error al eliminar usuarios:", error);
             throw error;
         }
     }

@@ -19,7 +19,6 @@ export default function DashboardPage() {
     const { t } = useTranslation();
     const navigate = useNavigate();
 
-    // Cargar datos según el rol
     useEffect(() => {
         if (rol === 'admin') {
             fetchUsuarios();
@@ -30,30 +29,23 @@ export default function DashboardPage() {
         }
     }, [rol, perfil?.id, fetchUsuarios, fetchTareasDelEmpleado, fetchAllTareas, fetchObras]);
 
-    // ==========================================
-    // LÓGICA PARA EL GRÁFICO DEL ADMINISTRADOR
-    // ==========================================
     const datosGrafico = useMemo(() => {
         if (rol !== 'admin') return [];
 
         const operariosMap = new Map();
 
-        // Filtramos solo los empleados (ignoramos admins)
         const empleados = usuarios.filter(u => u.rol === 'empleado');
         empleados.forEach(emp => {
             operariosMap.set(emp.id, {
                 nombre: emp.nombre,
-                // FIX: Dejamos exclusivamente los 2 estados actuales
                 Pendiente: 0,
                 Finalizada: 0
             });
         });
 
-        // Contamos las tareas de cada uno
         todasLasTareas.forEach(tarea => {
             if (tarea.empleado_id && operariosMap.has(tarea.empleado_id)) {
                 const operario = operariosMap.get(tarea.empleado_id);
-                // Si por alguna razón queda alguna tarea 'En curso' antigua en BD, la sumamos como 'Pendiente'
                 const estado = tarea.estado === 'Finalizada' ? 'Finalizada' : 'Pendiente';
                 operario[estado] += 1;
             }
@@ -64,10 +56,6 @@ export default function DashboardPage() {
 
     const obrasActivas = obras.filter(o => o.estado === 'Pendiente').length;
 
-
-    // ==========================================
-    // LÓGICA PARA EL PANEL DE EMPLEADO
-    // ==========================================
     const completadas = misTareas.filter(t => t.estado === 'Finalizada').length;
     const pendientes = misTareas.filter(t => t.estado !== 'Finalizada').length;
 
@@ -93,17 +81,15 @@ export default function DashboardPage() {
     const misObras = Array.from(obrasMap.values());
     const obrasUnicas = misObras.length;
 
-    // RENDERIZADO DEL ADMINISTRADOR
     if (rol === 'admin') {
         return (
-            <div className="p-6 space-y-8 max-w-7xl mx-auto">
-                <div>
-                    <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100">{t('dashboard.admin_title')}</h1>
-                    <p className="text-stone-500 mt-1">{t('dashboard.admin_subtitle', { name: perfil?.nombre })}</p>
+            <div className="p-4 sm:p-6 space-y-8 max-w-7xl mx-auto">
+                <div className="text-center sm:text-left">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{t('dashboard.admin_title')}</h1>
+                    <p className="text-sm sm:text-base text-stone-500 mt-1">{t('dashboard.admin_subtitle', { name: perfil?.nombre })}</p>
                 </div>
 
-                {/* MÉTRICAS REALES */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                     <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle className="text-sm font-medium">{t('dashboard.registered_users')}</CardTitle>
@@ -126,7 +112,7 @@ export default function DashboardPage() {
                         </CardContent>
                     </Card>
 
-                    <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
+                    <Card className="border-stone-200 dark:border-stone-800 shadow-sm sm:col-span-2 md:col-span-1">
                         <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                             <CardTitle className="text-sm font-medium">Volumen de Tareas</CardTitle>
                             <ClipboardList className="h-4 w-4 text-green-500" />
@@ -138,29 +124,27 @@ export default function DashboardPage() {
                     </Card>
                 </div>
 
-                {/* GRÁFICO RECHARTS */}
                 <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
                     <CardHeader>
-                        <CardTitle>Carga de Trabajo por Operario</CardTitle>
+                        <CardTitle className="text-lg sm:text-xl">Carga de Trabajo por Operario</CardTitle>
                         <CardDescription>Visualiza el estado de las tareas asignadas a cada miembro del equipo.</CardDescription>
                     </CardHeader>
-                    <CardContent className="h-[400px] w-full mt-4">
+                    <CardContent className="h-[300px] sm:h-[400px] w-full mt-4">
                         {loadingTareas ? (
                             <div className="flex justify-center h-full items-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
                         ) : datosGrafico.length === 0 ? (
-                            <div className="flex justify-center h-full items-center text-stone-500">No hay datos suficientes para graficar.</div>
+                            <div className="flex justify-center h-full items-center text-stone-500 text-center px-4">No hay datos suficientes para graficar.</div>
                         ) : (
                             <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={datosGrafico} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                                <BarChart data={datosGrafico} margin={{ top: 20, right: 10, left: -20, bottom: 5 }}>
                                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
-                                    <XAxis dataKey="nombre" axisLine={false} tickLine={false} />
-                                    <YAxis axisLine={false} tickLine={false} />
+                                    <XAxis dataKey="nombre" axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
+                                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12 }} />
                                     <Tooltip
                                         contentStyle={{ backgroundColor: '#1c1917', border: 'none', borderRadius: '8px', color: '#fff' }}
                                         cursor={{ fill: 'transparent' }}
                                     />
-                                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                                    {/* FIX: Eliminamos la barra "En curso" y dejamos solo Pendiente y Finalizada */}
+                                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }} />
                                     <Bar dataKey="Pendiente" stackId="a" fill="#f59e0b" radius={[0, 0, 4, 4]} />
                                     <Bar dataKey="Finalizada" stackId="a" fill="#22c55e" radius={[4, 4, 0, 0]} />
                                 </BarChart>
@@ -172,26 +156,26 @@ export default function DashboardPage() {
         );
     }
 
-    // RENDERIZADO DEL EMPLEADO
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-8">
-            <div className="flex items-center gap-4">
-                <div className="bg-primary/10 p-3 rounded-2xl">
+        <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-8">
+            {/* FIX MOBILE: Cabecera adaptable */}
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
+                <div className="bg-primary/10 p-3 rounded-2xl shrink-0">
                     <TrendingUp className="h-8 w-8 text-primary" />
                 </div>
                 <div>
-                    <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100">{t('dashboard.emp_title', { name: perfil?.nombre })}</h1>
-                    <p className="text-stone-500 mt-1">{t('dashboard.emp_subtitle')}</p>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{t('dashboard.emp_title', { name: perfil?.nombre })}</h1>
+                    <p className="text-sm sm:text-base text-stone-500 mt-1">{t('dashboard.emp_subtitle')}</p>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
                 <Card className="bg-stone-900 text-white border-none shadow-lg overflow-hidden relative">
                     <div className="absolute top-0 right-0 p-4 opacity-10"><CheckCircle2 className="h-16 w-16" /></div>
                     <CardHeader className="pb-2">
                         <CardTitle className="text-stone-400 text-xs uppercase tracking-wider">{t('dashboard.completed_tasks')}</CardTitle>
                     </CardHeader>
-                    <CardContent><div className="text-4xl font-bold">{loadingTareas ? '-' : completadas}</div></CardContent>
+                    <CardContent><div className="text-3xl sm:text-4xl font-bold">{loadingTareas ? '-' : completadas}</div></CardContent>
                 </Card>
 
                 <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
@@ -199,15 +183,15 @@ export default function DashboardPage() {
                         <CardTitle className="text-xs uppercase text-stone-500">{t('dashboard.pending_tasks')}</CardTitle>
                         <Clock className="h-4 w-4 text-amber-500" />
                     </CardHeader>
-                    <CardContent><div className="text-3xl font-bold text-stone-800 dark:text-stone-100">{loadingTareas ? '-' : pendientes}</div></CardContent>
+                    <CardContent><div className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{loadingTareas ? '-' : pendientes}</div></CardContent>
                 </Card>
 
-                <Card className="border-stone-200 dark:border-stone-800 shadow-sm">
+                <Card className="border-stone-200 dark:border-stone-800 shadow-sm sm:col-span-2 md:col-span-1">
                     <CardHeader className="pb-2 flex flex-row items-center justify-between">
                         <CardTitle className="text-xs uppercase text-stone-500">{t('dashboard.assigned_works')}</CardTitle>
                         <HardHat className="h-4 w-4 text-primary" />
                     </CardHeader>
-                    <CardContent><div className="text-3xl font-bold text-stone-800 dark:text-stone-100">{loadingTareas ? '-' : obrasUnicas}</div></CardContent>
+                    <CardContent><div className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{loadingTareas ? '-' : obrasUnicas}</div></CardContent>
                 </Card>
             </div>
 
@@ -215,14 +199,14 @@ export default function DashboardPage() {
                 <div className="w-full max-w-4xl">
                     <Card className="border-stone-200 dark:border-stone-800 shadow-sm flex flex-col">
                         <CardHeader>
-                            <CardTitle className="flex items-center gap-2"><HardHat className="h-5 w-5 text-primary" /> Tus Obras Activas</CardTitle>
+                            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl"><HardHat className="h-5 w-5 text-primary" /> Tus Obras Activas</CardTitle>
                             <CardDescription>Proyectos en los que tienes tareas asignadas</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">
                             {loadingTareas ? (
                                 <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
                             ) : misObras.length === 0 ? (
-                                <div className="text-center py-12 text-stone-500 bg-stone-50 dark:bg-stone-900/30 rounded-lg border border-dashed border-stone-200 dark:border-stone-800">
+                                <div className="text-center py-12 px-4 text-stone-500 bg-stone-50 dark:bg-stone-900/30 rounded-lg border border-dashed border-stone-200 dark:border-stone-800">
                                     <CheckCircle2 className="h-10 w-10 mx-auto text-green-500 mb-2 opacity-50" />
                                     <p>No tienes tareas en ninguna obra actualmente.</p>
                                     <p className="text-sm mt-1">¡Todo al día!</p>
@@ -233,18 +217,18 @@ export default function DashboardPage() {
                                         const porcentaje = Math.round((obra.completadas / obra.total) * 100);
                                         return (
                                             <div key={obra.id} className="p-4 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-100 dark:border-stone-800 flex flex-col gap-4 hover:border-primary/40 transition-colors">
-                                                <div className="flex justify-between items-start">
+                                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                                                     <div>
                                                         <h3 className="font-bold text-stone-900 dark:text-stone-100">{obra.nombre}</h3>
                                                         <p className="text-xs text-stone-500 mt-1">
                                                             {obra.pendientes === 0 ? '¡Todas las tareas completadas!' : `Tienes ${obra.pendientes} tareas pendientes de ${obra.total}`}
                                                         </p>
                                                     </div>
-                                                    <Button variant="outline" size="sm" onClick={() => navigate(`/app/obras/${obra.id}`)} className="text-stone-700 dark:text-stone-300">
+                                                    <Button variant="outline" size="sm" onClick={() => navigate(`/app/obras/${obra.id}`)} className="w-full sm:w-auto text-stone-700 dark:text-stone-300">
                                                         Entrar a la obra <ArrowRight className="ml-2 h-4 w-4 text-primary" />
                                                     </Button>
                                                 </div>
-                                                <div className="space-y-1.5">
+                                                <div className="space-y-1.5 mt-2 sm:mt-0">
                                                     <div className="flex justify-between text-xs font-medium text-stone-500">
                                                         <span>Tu progreso personal</span><span>{porcentaje}%</span>
                                                     </div>

@@ -18,18 +18,19 @@ import { MoreHorizontal, Shield, ShieldAlert, Trash2, UserPlus, Loader2, Users, 
 import type { Perfil } from '@/stores/authStore';
 
 export default function UsersManagementPage() {
-    const { usuarios, isLoading, fetchUsuarios, updateRolUsuario, deleteUsuario, updateDetallesUsuario } = useAdminStore();
+    const { usuarios, isLoading, fetchUsuarios, updateRolUsuario, deleteUsuario, updateDetallesUsuario, deleteUsuariosBulk } = useAdminStore();
     const { t } = useTranslation();
 
     const [userToDelete, setUserToDelete] = useState<string | null>(null);
+    const [bulkDeleteIds, setBulkDeleteIds] = useState<string[]>([]); // ESTADO MÚLTIPLE
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-    // Estados para Edición
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [userToEdit, setUserToEdit] = useState<string | null>(null);
     const [editName, setEditName] = useState('');
     const [editSurname, setEditSurname] = useState('');
-    const [editEmail, setEditEmail] = useState(''); // FIX: Estado para el email
+    const [editEmail, setEditEmail] = useState('');
     const [isEditing, setIsEditing] = useState(false);
 
     const [newEmail, setNewEmail] = useState('');
@@ -73,16 +74,14 @@ export default function UsersManagementPage() {
         }
     };
 
-    // FIX: Cargamos el email al abrir el modal de edición
     const handleOpenEdit = (user: Perfil) => {
         setUserToEdit(user.id);
         setEditName(user.nombre);
         setEditSurname(user.apellidos || '');
-        setEditEmail(user.email || ''); 
+        setEditEmail(user.email || '');
         setIsEditOpen(true);
     };
 
-    // FIX: Añadida la validación y el envío del email a updateDetallesUsuario
     const handleEditUser = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!userToEdit || !editName.trim() || !editEmail.trim()) {
@@ -122,7 +121,41 @@ export default function UsersManagementPage() {
         }
     };
 
+    const confirmBulkDelete = async () => {
+        try {
+            await deleteUsuariosBulk(bulkDeleteIds);
+            toast.success(`${bulkDeleteIds.length} usuarios eliminados con éxito`);
+        } catch (error) {
+            toast.error("Error al eliminar los usuarios");
+        } finally {
+            setBulkDeleteIds([]);
+        }
+    };
+
     const columns = useMemo<ColumnDef<Perfil>[]>(() => [
+        {
+            id: "select",
+            header: ({ table }) => (
+                <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-stone-300 accent-primary cursor-pointer"
+                    checked={table.getIsAllPageRowsSelected()}
+                    onChange={(e) => table.toggleAllPageRowsSelected(!!e.target.checked)}
+                    aria-label="Seleccionar todos"
+                />
+            ),
+            cell: ({ row }) => (
+                <input
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-stone-300 accent-primary cursor-pointer"
+                    checked={row.getIsSelected()}
+                    onChange={(e) => row.toggleSelected(!!e.target.checked)}
+                    aria-label="Seleccionar fila"
+                />
+            ),
+            enableSorting: false,
+            enableHiding: false,
+        },
         {
             accessorKey: "nombre",
             header: ({ column }) => {
@@ -233,26 +266,26 @@ export default function UsersManagementPage() {
     ], [t]);
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2">
                 <div>
-                    <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100 flex items-center gap-3">
-                        <Users className="h-8 w-8 text-primary" />
+                    <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100 flex items-center gap-3">
+                        <Users className="h-7 w-7 sm:h-8 sm:w-8 text-primary" />
                         {t('users.title')}
                     </h1>
-                    <p className="text-stone-600 dark:text-stone-400 mt-1">
+                    <p className="text-sm sm:text-base text-stone-600 dark:text-stone-400 mt-1">
                         {t('users.subtitle')}
                     </p>
                 </div>
 
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                     <DialogTrigger asChild>
-                        <Button className="flex items-center gap-2">
+                        <Button className="w-full sm:w-auto flex items-center gap-2">
                             <UserPlus className="h-4 w-4" />
                             {t('users.add_user')}
                         </Button>
                     </DialogTrigger>
-                    <DialogContent>
+                    <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
                         <DialogHeader>
                             <DialogTitle>{t('users.create_title')}</DialogTitle>
                             <DialogDescription>{t('users.create_desc')}</DialogDescription>
@@ -283,11 +316,18 @@ export default function UsersManagementPage() {
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
             ) : (
-                <DataTable columns={columns} data={usuarios} />
+                <div className="w-full overflow-x-auto pb-4">
+                    <DataTable
+                        columns={columns}
+                        data={usuarios}
+                        searchPlaceholder="Buscar empleado por nombre, apellidos o email..." // MODIFICADO PARA EL TUTOR
+                        onDeleteSelected={(ids) => setBulkDeleteIds(ids)} // CONECTADO
+                    />
+                </div>
             )}
 
             <Dialog open={isEditOpen} onOpenChange={setIsEditOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[500px]">
                     <DialogHeader>
                         <DialogTitle>{t('users.edit_title')}</DialogTitle>
                         <DialogDescription>{t('users.edit_desc')}</DialogDescription>
@@ -301,10 +341,14 @@ export default function UsersManagementPage() {
                             <Label>{t('users.form_surname')}</Label>
                             <Input value={editSurname} onChange={e => setEditSurname(e.target.value)} />
                         </div>
-                        {/* FIX: Formulario actualizado con el campo de email */}
                         <div className="space-y-2">
-                            <Label>{t('users.form_email')}</Label>
-                            <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} />
+                            <Label className="opacity-70">{t('users.form_email')}</Label>
+                            <Input
+                                type="email"
+                                value={editEmail}
+                                disabled
+                                className="bg-stone-100 dark:bg-stone-800 cursor-not-allowed opacity-70"
+                            />
                         </div>
                         <Button type="submit" className="w-full" disabled={isEditing}>
                             {isEditing ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : t('users.submit_edit')}
@@ -313,6 +357,7 @@ export default function UsersManagementPage() {
                 </DialogContent>
             </Dialog>
 
+            {/* MODALES DE BORRADO (INDIVIDUAL Y MÚLTIPLE) */}
             <AlertDialog open={!!userToDelete} onOpenChange={(open) => !open && setUserToDelete(null)}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
@@ -325,6 +370,23 @@ export default function UsersManagementPage() {
                         <AlertDialogCancel>{t('users.delete_cancel')}</AlertDialogCancel>
                         <AlertDialogAction onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">
                             {t('users.delete_confirm')}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={bulkDeleteIds.length > 0} onOpenChange={(open) => !open && setBulkDeleteIds([])}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>¿Eliminar {bulkDeleteIds.length} empleados?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Esta acción es irreversible. Se eliminará el acceso y todos los perfiles asociados a estos usuarios.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmBulkDelete} className="bg-red-600 hover:bg-red-700 text-white">
+                            Borrar Definitivamente
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

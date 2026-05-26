@@ -28,8 +28,7 @@
         "privacy": "Privacidad",
         "terms": "Términos de servicio",
         "contact": "Contacto soporte",
-        "rights": "Voltio. Todos los derechos reservados.",
-        "system": "Sistema de Gestión Operativa"
+        "rights": "Voltio. Todos los derechos reservados."
     },
     "login": {
         "title": "Iniciar sesión",
@@ -103,7 +102,6 @@
         "no_desc": "Sin descripción adicional."
     },
     "obra_detail": {
-        "active_project": "Proyecto activo",
         "add_task": "Añadir Tarea",
         "assign_task": "Asignar nueva tarea",
         "task_title": "Título",

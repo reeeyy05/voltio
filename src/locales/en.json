@@ -28,8 +28,7 @@
         "privacy": "Privacy Policy",
         "terms": "Terms of Service",
         "contact": "Support Contact",
-        "rights": "Voltio. All rights reserved.",
-        "system": "Operational Management System"
+        "rights": "Voltio. All rights reserved."
     },
     "login": {
         "title": "Log in",
@@ -103,7 +102,6 @@
         "no_desc": "No additional description."
     },
     "obra_detail": {
-        "active_project": "Active project",
         "add_task": "Add Task",
         "assign_task": "Assign new task",
         "task_title": "Title",
