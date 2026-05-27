@@ -30,6 +30,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 export function MainSidebar() {
     const { rol, perfil, logout } = useAuthStore();
@@ -37,12 +38,21 @@ export function MainSidebar() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isActive = (path: string) => location.pathname === path;
-
     const handleLogout = async () => {
         await logout();
         navigate('/login');
     };
+
+    // Lógica para detectar si la ruta actual coincide o es una subruta
+    const isActive = (path: string) => {
+        if (path === '/app/panel') return location.pathname === path;
+        return location.pathname.startsWith(path);
+    };
+
+    // Helper para definir clases condicionales del botón
+    const getButtonClasses = (path: string) => isActive(path)
+        ? "bg-primary/15 text-primary font-semibold shadow-sm"
+        : "text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all duration-200";
 
     return (
         <Sidebar collapsible="icon">
@@ -58,9 +68,9 @@ export function MainSidebar() {
                         <SidebarMenu>
                             {/* Dashboard */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/panel")} tooltip={t('sidebar.dashboard')}>
+                                <SidebarMenuButton asChild className={getButtonClasses("/app/panel")} tooltip={t('sidebar.dashboard')}>
                                     <Link to="/app/panel">
-                                        <LayoutDashboard />
+                                        <LayoutDashboard className={isActive("/app/panel") ? "text-primary" : ""} />
                                         <span>{t('sidebar.dashboard')}</span>
                                     </Link>
                                 </SidebarMenuButton>
@@ -68,9 +78,9 @@ export function MainSidebar() {
 
                             {/* Obras */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/obras")} tooltip={t('sidebar.works')}>
+                                <SidebarMenuButton asChild className={getButtonClasses("/app/obras")} tooltip={t('sidebar.works')}>
                                     <Link to="/app/obras">
-                                        <HardHat />
+                                        <HardHat className={isActive("/app/obras") ? "text-primary" : ""} />
                                         <span>{t('sidebar.works')}</span>
                                     </Link>
                                 </SidebarMenuButton>
@@ -78,9 +88,9 @@ export function MainSidebar() {
 
                             {/* Inventario */}
                             <SidebarMenuItem>
-                                <SidebarMenuButton asChild isActive={isActive("/app/inventario")} tooltip={t('sidebar.inventory')}>
+                                <SidebarMenuButton asChild className={getButtonClasses("/app/inventario")} tooltip={t('sidebar.inventory')}>
                                     <Link to="/app/inventario">
-                                        <Package />
+                                        <Package className={isActive("/app/inventario") ? "text-primary" : ""} />
                                         <span>{t('sidebar.inventory')}</span>
                                     </Link>
                                 </SidebarMenuButton>
@@ -89,9 +99,9 @@ export function MainSidebar() {
                             {/* Usuarios (Solo Admin) */}
                             {rol === 'admin' && (
                                 <SidebarMenuItem>
-                                    <SidebarMenuButton asChild isActive={isActive("/app/usuarios")} tooltip={t('sidebar.users')}>
+                                    <SidebarMenuButton asChild className={getButtonClasses("/app/usuarios")} tooltip={t('sidebar.users')}>
                                         <Link to="/app/usuarios">
-                                            <Users />
+                                            <Users className={isActive("/app/usuarios") ? "text-primary" : ""} />
                                             <span>{t('sidebar.users')}</span>
                                         </Link>
                                     </SidebarMenuButton>
