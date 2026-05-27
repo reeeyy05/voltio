@@ -61,7 +61,7 @@
         "logout": "Sign Out"
     },
     "dashboard": {
-        "admin_title": "Control Panel",
+        "admin_title": "Dashboard",
         "admin_subtitle": "Welcome to the Voltio command center, {{name}}.",
         "registered_users": "Registered Users",
         "users_trend": "+2 since last week",

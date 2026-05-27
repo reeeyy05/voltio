@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/Supabase/Client';
 
-export type EstadoObra = 'Pendiente' | 'Finalizada';
+export type EstadoObra = 'En curso' | 'Finalizada';
 
 export interface Obra {
     id: string;
