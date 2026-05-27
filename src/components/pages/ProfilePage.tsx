@@ -1,145 +1,107 @@
-import { useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import { useTranslation } from "react-i18next";
-import { supabase } from "@/Supabase/Client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { LogOut, Camera, Loader2, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { LogOut, Loader2, Save, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { supabase } from "@/Supabase/Client";
 
 export default function ProfilePage() {
-    const { perfil, logout, checkSession } = useAuthStore();
+    const { perfil, logout, isLoading } = useAuthStore();
     const navigate = useNavigate();
     const { t } = useTranslation();
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
-    const [uploading, setUploading] = useState(false);
-    const [message, setMessage] = useState<{ type: 'error' | 'success', text: string } | null>(null);
+    // Estado local para manejar los cambios antes de guardar
+    const [formData, setFormData] = useState({ nombre: "", apellidos: "" });
+    const [isDirty, setIsDirty] = useState(false);
 
-    const handleLogout = async () => {
-        await logout();
-        navigate("/");
+    // Inicializar estado con datos del store cuando estén disponibles
+    useEffect(() => {
+        if (perfil) {
+            setFormData({
+                nombre: perfil.nombre || "",
+                apellidos: perfil.apellidos || ""
+            });
+        }
+    }, [perfil]);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        // Comparamos con el perfil original para determinar si hubo cambios
+        setIsDirty(value !== (perfil ? (perfil[name as keyof typeof perfil] || "") : ""));
     };
 
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file || !perfil) return;
-
-        if (file.size > 2 * 1024 * 1024) {
-            setMessage({ type: 'error', text: t('profile.err_size') });
-            if (fileInputRef.current) fileInputRef.current.value = '';
-            return;
-        }
-
-        setUploading(true);
-        setMessage(null);
+    const handleSave = async () => {
+        if (!perfil) return;
 
         try {
-            const fileExt = file.name.split('.').pop();
-            const fileName = `${perfil.id}-${Date.now()}.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(fileName, file, { cacheControl: '3600', upsert: false });
-
-            if (uploadError) throw uploadError;
-
-            const { data: urlData } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(fileName);
-
-            const { error: updateError } = await supabase
+            const { error } = await supabase
                 .from('perfiles')
-                .update({ avatar: urlData.publicUrl })
+                .update({ nombre: formData.nombre, apellidos: formData.apellidos })
                 .eq('id', perfil.id);
 
-            if (updateError) throw updateError;
+            if (error) throw error;
 
-            await checkSession();
-            setMessage({ type: 'success', text: t('profile.success_upload') });
-            setTimeout(() => setMessage(null), 3000);
-
+            toast.success("Perfil actualizado con éxito");
+            setIsDirty(false);
+            // Opcional: podrías forzar un refetch del perfil aquí
         } catch (error) {
-            console.error("Error:", error);
-            setMessage({ type: 'error', text: t('profile.err_upload') });
-        } finally {
-            setUploading(false);
-            if (fileInputRef.current) fileInputRef.current.value = '';
+            toast.error("Error al actualizar el perfil");
         }
     };
+
+    if (!perfil) return <div className="p-10 text-center"><Loader2 className="animate-spin mx-auto" /></div>;
 
     return (
         <div className="p-6 max-w-2xl mx-auto space-y-6">
-            <h1 className="text-3xl font-bold text-stone-800 dark:text-stone-100">{t('profile.title')}</h1>
+            <h1 className="text-3xl font-bold">{t('profile.title')}</h1>
 
-            {message && (
-                <div className={`p-4 rounded-lg flex items-center gap-3 text-sm font-medium border transition-all ${message.type === 'error'
-                        ? 'bg-red-50 text-red-600 border-red-200 dark:bg-red-950/30 dark:border-red-900/50'
-                        : 'bg-green-50 text-green-600 border-green-200 dark:bg-green-950/30 dark:border-green-900/50'
-                    }`}>
-                    {message.type === 'error' ? <AlertCircle className="h-5 w-5" /> : <CheckCircle2 className="h-5 w-5" />}
-                    {message.text}
-                </div>
-            )}
-
-            <Card className="border-stone-200 dark:border-stone-800 shadow-sm overflow-hidden">
-                <CardHeader className="flex flex-col items-center gap-6 bg-stone-50/50 dark:bg-stone-900/50 pb-8 pt-10">
-                    <div className="relative group">
-                        <Avatar className="h-28 w-28 border-4 border-background shadow-md transition-transform duration-300 group-hover:scale-105">
-                            <AvatarImage src={perfil?.avatar || ""} />
-                            <AvatarFallback className="text-4xl bg-primary/10 text-primary uppercase font-bold">
-                                {perfil?.nombre?.charAt(0)}
-                            </AvatarFallback>
+            <Card>
+                <CardHeader className="flex flex-row items-center gap-4 pt-10">
+                    <div className="relative">
+                        <Avatar className="h-20 w-20">
+                            <AvatarImage src={perfil.avatar || ""} />
+                            <AvatarFallback>{perfil.nombre?.charAt(0)}</AvatarFallback>
                         </Avatar>
-
-                        <div
-                            onClick={() => !uploading && fileInputRef.current?.click()}
-                            className={`absolute inset-0 bg-black/60 flex flex-col items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer ${uploading ? 'opacity-100' : ''}`}
-                        >
-                            {uploading ? (
-                                <Loader2 className="h-6 w-6 text-white animate-spin" />
-                            ) : (
-                                <>
-                                    <Camera className="h-6 w-6 text-white mb-1" />
-                                    <span className="text-[10px] text-white font-bold uppercase tracking-wider">{t('profile.change_photo')}</span>
-                                </>
-                            )}
-                        </div>
-
-                        <input type="file" ref={fileInputRef} onChange={handleFileChange} accept="image/*" className="hidden" />
+                        <button className="absolute bottom-0 right-0 p-1 bg-stone-100 rounded-full hover:bg-stone-200">
+                            <Camera className="h-4 w-4" />
+                        </button>
                     </div>
-
-                    <CardTitle className="text-3xl font-extrabold text-stone-900 dark:text-stone-50">
-                        {perfil?.nombre} {perfil?.apellidos}
-                    </CardTitle>
+                    <div>
+                        <CardTitle>{perfil.nombre} {perfil.apellidos}</CardTitle>
+                        <p className="text-sm text-stone-500">{perfil.email}</p>
+                    </div>
                 </CardHeader>
 
-                <CardContent className="pt-8 space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1.5">
-                            <span className="text-[11px] font-bold uppercase tracking-widest text-stone-500">{t('profile.name')}</span>
-                            <p className="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-100 dark:border-stone-800 text-stone-800 dark:text-stone-200">
-                                {perfil?.nombre}
-                            </p>
+                <CardContent className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <Label>Nombre</Label>
+                            <Input name="nombre" value={formData.nombre} onChange={handleInputChange} />
                         </div>
-                        <div className="space-y-1.5">
-                            <span className="text-[11px] font-bold uppercase tracking-widest text-stone-500">{t('profile.surname')}</span>
-                            <p className="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-100 dark:border-stone-800 text-stone-800 dark:text-stone-200">
-                                {perfil?.apellidos || '-'}
-                            </p>
+                        <div className="space-y-1">
+                            <Label>Apellidos</Label>
+                            <Input name="apellidos" value={formData.apellidos} onChange={handleInputChange} />
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <span className="text-[11px] font-bold uppercase tracking-widest text-stone-500">{t('profile.email')}</span>
-                        <p className="p-3 bg-stone-50 dark:bg-stone-900/50 rounded-lg border border-stone-100 dark:border-stone-800 text-stone-800 dark:text-stone-200">
-                            {perfil?.email}
-                        </p>
-                    </div>
+                    {/* Botón de guardar condicional */}
+                    {isDirty && (
+                        <div className="pt-2 animate-in fade-in slide-in-from-top-2">
+                            <Button onClick={handleSave} className="w-full">
+                                <Save className="mr-2 h-4 w-4" /> Guardar cambios
+                            </Button>
+                        </div>
+                    )}
 
-                    <div className="pt-6 border-t border-stone-100 dark:border-stone-800">
-                        <Button variant="destructive" onClick={handleLogout} className="w-full sm:w-auto font-bold px-8">
+                    <div className="pt-6 border-t">
+                        <Button variant="destructive" onClick={() => { logout(); navigate("/"); }} className="w-full">
                             <LogOut className="mr-2 h-4 w-4" /> {t('profile.logout')}
                         </Button>
                     </div>

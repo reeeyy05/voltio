@@ -18,7 +18,7 @@ interface AuthState {
     perfil: Perfil | null;
     rol: RolUsuario;
     isLoading: boolean;
-    isInitialized: boolean; // NUEVO: Bandera para saber si ya comprobamos la sesión inicial
+    isInitialized: boolean;
     error: string | null;
     checkSession: () => Promise<void>;
     signIn: (email: string, password: string) => Promise<void>;
@@ -30,14 +30,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     perfil: null,
     rol: null,
     isLoading: false,
-    isInitialized: false, // Arranca en falso
+    isInitialized: false,
     error: null,
 
     checkSession: async () => {
-        if (!get().isInitialized) {
-            set({ isLoading: true });
-        }
-
+        if (!get().isInitialized) set({ isLoading: true });
         try {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
@@ -46,7 +43,6 @@ export const useAuthStore = create<AuthState>((set, get) => ({
                     .select('*')
                     .eq('id', session.user.id)
                     .single();
-
                 set({
                     session,
                     perfil: perfilData as Perfil,
@@ -58,30 +54,21 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         } catch (error) {
             console.error("Error al verificar sesión:", error);
         } finally {
-            // FIX: Al terminar, avisamos que ya estamos inicializados
-            set({ isLoading: false, isInitialized: true }); 
+            set({ isLoading: false, isInitialized: true });
         }
     },
 
     signIn: async (email, password) => {
         set({ isLoading: true, error: null });
         try {
-            const { data, error: authError } = await supabase.auth.signInWithPassword({
-                email,
-                password,
-            });
-
+            const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
             if (authError) throw authError;
-
             if (data.session) {
-                const { data: perfilData, error: profileError } = await supabase
+                const { data: perfilData } = await supabase
                     .from('perfiles')
                     .select('*')
                     .eq('id', data.session.user.id)
                     .single();
-
-                if (profileError) console.error("Error al cargar perfil:", profileError);
-
                 set({
                     session: data.session,
                     perfil: (perfilData as Perfil) || null,

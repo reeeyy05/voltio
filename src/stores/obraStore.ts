@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/Supabase/Client';
 
+// Definición estricta: 'En curso' o 'Finalizada' solamente.
 export type EstadoObra = 'En curso' | 'Finalizada';
 
 export interface Obra {
@@ -17,7 +18,7 @@ interface ObrasState {
     error: string | null;
     fetchObras: () => Promise<void>;
     createObra: (nombre: string, descripcion?: string) => Promise<void>;
-    createObrasBulk: (obras: { nombre: string; descripcion: string | null; estado: EstadoObra }[]) => Promise<void>; // NUEVO
+    createObrasBulk: (obras: { nombre: string; descripcion: string | null; estado: EstadoObra }[]) => Promise<void>;
     updateEstadoObra: (id: string, nuevoEstado: EstadoObra) => Promise<void>;
     deleteObra: (id: string) => Promise<void>;
     deleteObrasBulk: (ids: string[]) => Promise<void>;
@@ -48,12 +49,13 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
     createObra: async (nombre: string, descripcion?: string) => {
         set({ isLoading: true, error: null });
         try {
+            // El estado por defecto definido en BD es 'En curso'
             const { error } = await supabase
                 .from('obras')
                 .insert([{
                     nombre,
                     descripcion: descripcion || null,
-                    estado: 'Pendiente'
+                    estado: 'En curso'
                 }]);
 
             if (error) throw error;
@@ -66,7 +68,6 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
         }
     },
 
-    // NUEVA FUNCIÓN PARA LA CARGA MASIVA DE OBRAS
     createObrasBulk: async (obras) => {
         set({ isLoading: true, error: null });
         try {
