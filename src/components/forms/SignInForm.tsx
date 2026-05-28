@@ -49,6 +49,9 @@ export function SignInForm() {
                     <Label htmlFor="password" className="text-stone-800 dark:text-stone-200">
                         {t('login.password')}
                     </Label>
+                    <Link to="/recuperar-password" className="text-xs font-medium text-primary hover:underline">
+                        {t('login.forgot_password')}
+                    </Link>
                 </div>
                 <PasswordInput
                     id="password"
@@ -57,9 +60,6 @@ export function SignInForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={isLoading}
                 />
-                <a href="/reset-password" className="text-sm font-medium text-primary hover:underline">
-                    {t('login.forgot_password')}
-                </a>
             </div>
             <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={isLoading}>
                 {isLoading ? (

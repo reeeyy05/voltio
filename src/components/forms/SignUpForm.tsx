@@ -1,13 +1,12 @@
 import { supabase } from '@/Supabase/Client';
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2, CheckCircle2, Upload, User, ArrowLeft } from 'lucide-react';
+import { AlertCircle, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { PasswordInput } from '../ui/PasswordInput';
-import { useAuthStore } from '@/stores/authStore';
 
 export const SignUpForm: React.FC = () => {
     const [nombre, setNombre] = useState('');
@@ -15,25 +14,12 @@ export const SignUpForm: React.FC = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const [avatarFile, setAvatarFile] = useState<File | null>(null);
-    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
-
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { checkSession } = useAuthStore();
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            setAvatarFile(file);
-            setAvatarPreview(URL.createObjectURL(file));
-        }
-    };
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -127,7 +113,6 @@ export const SignUpForm: React.FC = () => {
                 </Link>
             </div>
 
-            {/* BOTÓN PROFESIONAL DE REGRESO A LA LANDING PAGE */}
             <div className="text-center mt-4 pt-4 border-t border-stone-150 dark:border-stone-800 flex flex-col items-center justify-center">
                 <Button variant="ghost" size="sm" asChild className="text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 gap-2 w-full">
                     <Link to="/">

@@ -232,5 +232,29 @@
         "page": "Página",
         "of": "de",
         "no_results": "No se encontraron resultados."
+    },
+    "recovery": {
+        "title": "Recuperar contraseña",
+        "subtitle": "Introduce el correo electrónico asociado a tu cuenta de Voltio.",
+        "email_label": "Correo Electrónico",
+        "submit": "Enviar enlace",
+        "success_toast": "Enlace enviado correctamente",
+        "error_toast": "Error al enviar el correo de recuperación. Revisa el email introducido.",
+        "check_email": "Revisa tu bandeja de entrada",
+        "check_email_desc_1": "Hemos enviado un enlace seguro de recuperación a",
+        "check_email_desc_2": "Haz clic en él para establecer una nueva contraseña. (No olvides revisar la carpeta de Spam).",
+        "back_login": "Volver al inicio de sesión",
+        "update_title": "Nueva contraseña",
+        "update_subtitle": "Crea una contraseña segura para tu cuenta de Voltio.",
+        "new_password": "Nueva contraseña",
+        "confirm_password": "Confirmar contraseña",
+        "min_chars": "Mínimo 6 caracteres",
+        "repeat_password": "Repite la contraseña",
+        "save_password": "Guardar nueva contraseña",
+        "session_verified": "Sesión temporal verificada. Introduce tu nueva contraseña.",
+        "err_mismatch": "Las contraseñas introducidas no coinciden.",
+        "err_length": "Por seguridad, la contraseña debe tener al menos 6 caracteres.",
+        "success_update": "Tu contraseña ha sido actualizada con éxito.",
+        "err_update": "Hubo un problema al actualizar la contraseña. Pudo expirar el enlace."
     }
 }

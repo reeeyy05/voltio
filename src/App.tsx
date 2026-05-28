@@ -5,6 +5,8 @@ import LandingPage from './components/pages/LandingPage';
 import SignInPage from './components/pages/SignInPage';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import { SignUpPage } from './components/pages/SignUpPage';
+import ForgotPasswordPage from './components/pages/ForgotPasswordPage';
+import UpdatePasswordPage from './components/pages/UpdatePasswordPage';
 import { useAuthStore } from './stores/authStore';
 import { supabase } from './Supabase/Client';
 import ProfilePage from './components/pages/ProfilePage';
@@ -34,6 +36,8 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<SignInPage />} />
         <Route path="/registro" element={<SignUpPage />} />
+        <Route path="/recuperar-password" element={<ForgotPasswordPage />} />
+        <Route path="/actualizar-password" element={<UpdatePasswordPage />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/app" element={<MainLayout />}>

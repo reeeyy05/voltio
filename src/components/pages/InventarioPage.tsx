@@ -5,7 +5,7 @@ import { DataTable } from '@/components/ui/data-table';
 import { toast } from 'sonner';
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter,AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import { useInventarioStore, type Material } from '@/stores/inventarioStore';
 
 export default function InventarioPage() {
     const { t } = useTranslation();
-    const { materiales, isLoading, fetchMateriales, createMaterial, createMaterialesBulk, updateCantidad, deleteMaterial, deleteMaterialesBulk } = useInventarioStore();
+    const { materiales, fetchMateriales, createMaterial, createMaterialesBulk, updateCantidad, deleteMaterial, deleteMaterialesBulk } = useInventarioStore();
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);

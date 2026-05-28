@@ -54,7 +54,8 @@ export default function DashboardPage() {
         return Array.from(operariosMap.values());
     }, [todasLasTareas, usuarios, rol]);
 
-    const obrasActivas = obras.filter(o => o.estado === 'Pendiente').length;
+    // CORRECCIÓN: Usar 'En curso' en lugar de 'Pendiente'
+    const obrasActivas = obras.filter(o => o.estado === 'En curso').length;
 
     const completadas = misTareas.filter(t => t.estado === 'Finalizada').length;
     const pendientes = misTareas.filter(t => t.estado !== 'Finalizada').length;
@@ -158,7 +159,6 @@ export default function DashboardPage() {
 
     return (
         <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-8">
-            {/* FIX MOBILE: Cabecera adaptable */}
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left">
                 <div className="bg-primary/10 p-3 rounded-2xl shrink-0">
                     <TrendingUp className="h-8 w-8 text-primary" />

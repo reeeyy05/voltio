@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, CheckCircle2, Circle, HardHat, Loader2, Plus, Trash2, User, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Circle, Loader2, Plus, Trash2, User, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Obra } from '@/stores/obraStore';
 import { Card, CardContent } from '../ui/card';
@@ -32,7 +32,6 @@ export default function ObraDetailPage() {
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [nuevaTarea, setNuevaTarea] = useState({ descripcion: '', empleado_id: '' });
 
-    // Estado para el modal de borrado de tarea
     const [tareaToDelete, setTareaToDelete] = useState<string | null>(null);
 
     useEffect(() => {
@@ -99,8 +98,8 @@ export default function ObraDetailPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl sm:text-3xl font-bold text-stone-800 dark:text-stone-100">{obra.nombre}</h1>
-                            <Badge variant={obra.estado === 'Pendiente' ? 'secondary' : 'default'}>
-                                {obra.estado === 'Pendiente' ? 'Pendiente' : t('obras.status_completed')}
+                            <Badge variant={obra.estado === 'En curso' ? 'secondary' : 'default'}>
+                                {obra.estado === 'En curso' ? 'En curso' : t('obras.status_completed')}
                             </Badge>
                         </div>
                     </div>
@@ -190,7 +189,6 @@ export default function ObraDetailPage() {
                                         </div>
                                     </div>
 
-                                    {/* Botón de borrado ahora abre el modal */}
                                     <Button variant="ghost" size="icon" onClick={() => setTareaToDelete(tarea.id)} className="text-red-500 hover:text-red-600 hover:bg-red-50">
                                         <Trash2 className="h-4 w-4" />
                                     </Button>

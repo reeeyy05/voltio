@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { supabase } from "@/Supabase/Client";
 
 export default function ProfilePage() {
-    const { perfil, logout, isLoading } = useAuthStore();
+    const { perfil, logout} = useAuthStore();
     const navigate = useNavigate();
     const { t } = useTranslation();
 

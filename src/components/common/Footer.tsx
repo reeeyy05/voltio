@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Zap, ShieldCheck, Scale, Cookie } from 'lucide-react';
-// Importamos las marcas comerciales desde FontAwesome (a través de react-icons)
 import { FaXTwitter, FaLinkedinIn, FaGithub } from 'react-icons/fa6';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 

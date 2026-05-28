@@ -232,5 +232,29 @@
         "page": "Page",
         "of": "of",
         "no_results": "No results found."
+    },
+    "recovery": {
+        "title": "Recover password",
+        "subtitle": "Enter the email address associated with your Voltio account.",
+        "email_label": "Email Address",
+        "submit": "Send link",
+        "success_toast": "Link sent successfully",
+        "error_toast": "Error sending recovery email. Check the entered email.",
+        "check_email": "Check your inbox",
+        "check_email_desc_1": "We have sent a secure recovery link to",
+        "check_email_desc_2": "Click on it to set a new password. (Don't forget to check your Spam folder).",
+        "back_login": "Back to login",
+        "update_title": "New password",
+        "update_subtitle": "Create a secure password for your Voltio account.",
+        "new_password": "New password",
+        "confirm_password": "Confirm password",
+        "min_chars": "Minimum 6 characters",
+        "repeat_password": "Repeat password",
+        "save_password": "Save new password",
+        "session_verified": "Temporary session verified. Enter your new password.",
+        "err_mismatch": "The passwords entered do not match.",
+        "err_length": "For security, the password must be at least 6 characters long.",
+        "success_update": "Your password has been successfully updated.",
+        "err_update": "There was a problem updating your password. The link might have expired."
     }
 }
