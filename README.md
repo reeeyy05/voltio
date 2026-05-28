@@ -2,7 +2,6 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Frontend-React-blue?logo=react" alt="React Badge">
-  <img src="https://img.shields.io/badge/Estado-Zustand-orange?logo=react" alt="Zustand Badge">
   <img src="https://img.shields.io/badge/Backend-Supabase-green?logo=supabase" alt="Supabase Badge">
   <img src="https://img.shields.io/badge/Estilos-TailwindCSS-38bdf8?logo=tailwindcss" alt="Tailwind Badge">
   <img src="https://img.shields.io/badge/Licencia-MIT-yellow" alt="License Badge">
@@ -43,8 +42,6 @@ Voltio/
 ├── public/               # Recursos estáticos (logo.png, preview.png)
 │
 ├── docs/                 # Documentación del proyecto (manuales y diagramas)
-│   ├── Manual_tecnico.pdf
-│   └── diagrama.png
 │
 ├── src/
 │   ├── components/       # Componentes UI reutilizables (Shadcn, modales, formularios)
@@ -200,6 +197,6 @@ Planificación estratégica basada en hitos clave:
 ## 👩‍💻 Autoría
 
 - Alejandro Rey Tostado
-- CFGS en Desarrollo de Aplicaciones Web (DAW)
+- Desarrollo de Aplicaciones Web (DAW)
 - 📍 IES Albarregas – Mérida (España)
 - 📘 Proyecto TFG: Voltio – Gestión operativa para el sector eléctrico (2026)
