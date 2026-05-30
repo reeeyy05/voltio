@@ -5,8 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { PasswordInput } from '../ui/PasswordInput';
+import { useAuthStore } from '@/stores/authStore';
+import { toast } from 'sonner';
 
 export const SignUpForm: React.FC = () => {
     const [nombre, setNombre] = useState('');
@@ -16,10 +18,10 @@ export const SignUpForm: React.FC = () => {
 
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     const navigate = useNavigate();
     const { t } = useTranslation();
+    const { checkSession } = useAuthStore();
 
     const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,26 +36,20 @@ export const SignUpForm: React.FC = () => {
             });
 
             if (error) throw error;
-            setSuccess(true);
+
+            // Al estar desactivada la confirmación por email, Supabase nos da sesión directa.
+            // Forzamos al store global a leer esa sesión y obtener el perfil:
+            await checkSession();
+
+            // Notificamos y redirigimos sin pasar por la pantalla de login
+            toast.success("¡Registro exitoso! Accediendo a Voltio...");
+            navigate('/app');
+
         } catch (err: any) {
             setError(err.message);
-        } finally {
-            setLoading(false);
+            setLoading(false); // Solo paramos la carga si hay error
         }
     };
-
-    if (success) {
-        return (
-            <div className="text-center space-y-4">
-                <CheckCircle2 className="h-16 w-16 text-green-500 mx-auto" />
-                <h2 className="text-2xl font-bold">{t('auth.signup_success_title')}</h2>
-                <p className="text-stone-600">{t('auth.signup_success_desc')}</p>
-                <Button onClick={() => navigate('/login')} className="w-full">
-                    {t('login.submit')}
-                </Button>
-            </div>
-        );
-    }
 
     return (
         <form onSubmit={handleSignUp} className="space-y-4 w-full">

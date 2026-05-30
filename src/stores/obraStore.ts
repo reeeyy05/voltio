@@ -49,7 +49,7 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
     createObra: async (nombre: string, descripcion?: string) => {
         set({ isLoading: true, error: null });
         try {
-            // El estado por defecto definido en BD es 'En curso'
+            // Mandamos solo las columnas que SÍ existen en tu base de datos
             const { error } = await supabase
                 .from('obras')
                 .insert([{
@@ -58,7 +58,10 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
                     estado: 'En curso'
                 }]);
 
-            if (error) throw error;
+            if (error) {
+                console.error("🔥 ERROR SUPABASE AL CREAR OBRA:", error);
+                throw error;
+            }
             await get().fetchObras();
         } catch (error: any) {
             set({ error: error.message });
@@ -72,7 +75,11 @@ export const useObrasStore = create<ObrasState>((set, get) => ({
         set({ isLoading: true, error: null });
         try {
             const { error } = await supabase.from('obras').insert(obras);
-            if (error) throw error;
+
+            if (error) {
+                console.error("🔥 ERROR SUPABASE EN CARGA MASIVA:", error);
+                throw error;
+            }
             await get().fetchObras();
         } catch (error: any) {
             console.error("Error en carga masiva de obras:", error);
